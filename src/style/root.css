@@ -1,0 +1,12 @@
+:root {
+    --green: #1DB954;
+    --lightGrey: #DDDDDD;
+    --grey: #6C6B6B;
+    --black: #303030;
+    --blue: #1BB7CC;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}

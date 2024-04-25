@@ -1,5 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
+import './style/root.css'
+import './style/font.css'
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Upload from './pages/Upload'
