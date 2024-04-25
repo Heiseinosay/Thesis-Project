@@ -53,14 +53,14 @@ function Record() {
             <h1 className='title'>Record your voice</h1>
             <div className='reminder'>
                 <FontAwesomeIcon className='info' icon={faCircleInfo} />
-                <h6>For best result speak clearly in microphone</h6>
+                <h6 className='inter-regular'>For best result speak clearly in microphone</h6>
             </div>
 
-            <h1 className='sentence'>{sentenceArray[sentenceCount]}</h1>
+            <h1 className='inter-regular sentence'>{sentenceArray[sentenceCount]}</h1>
 
             <div className='progress'>
                 <FontAwesomeIcon className='next-prev' icon={faAngleLeft} onClick={() => incrementCount(0)} />
-                <h4>{sentenceCount + 1}</h4>
+                <h4 className='inter-bold'>{sentenceCount + 1}</h4>
                 <FontAwesomeIcon className='next-prev' icon={faAngleRight} onClick={() => incrementCount(1)} />
             </div>
 
@@ -68,7 +68,7 @@ function Record() {
                 <FontAwesomeIcon icon={faMicrophone} />
             </div>
 
-            <p className='note'>Note: we need to analyze a short audio sample focusing on aspects like how you sound, the energy in your voice, and your speaking pace. Your privacy is important to us. Your voice recordings will be anonymized and used solely for voice recognition technology.</p>
+            <p className='inter-light note'><b className='inter-bold'>Note:</b> We need to analyze a short audio sample focusing on aspects like how you sound, the energy in your voice, and your speaking pace. Your privacy is important to us. Your voice recordings will be anonymized and used solely for voice recognition technology.</p>
         </div>
         
     )
