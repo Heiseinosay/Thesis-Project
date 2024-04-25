@@ -2,7 +2,16 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import '../style/root.css'
 import '../style/font.css'
 import '../style/record.css'
-import React, {useState} from 'react'
+import React, {Component, useState} from 'react'
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircleInfo } from '@fortawesome/free-solid-svg-icons'
+import { faAngleRight } from '@fortawesome/free-solid-svg-icons'
+import { faAngleLeft } from '@fortawesome/free-solid-svg-icons'
+import { faMicrophone } from '@fortawesome/free-solid-svg-icons'
+
+import Navigation from '../components/NavigationProgress'
+
 
 //images
 import infoImage from '../images/info.png'
@@ -39,95 +48,30 @@ function Record() {
     }
 
     return (
-        <div className='container text-center'>
-            <div className='row align-items-center'>
-                <div className='col'>
-                    three
-                </div>
-                <div className='col-6'>
-                    <div className='row'>
-                        <div className='row'>
-                            <h1 className='inter-bold h3 '>Record your voice</h1>
-                        </div>
-                        <div className='row d-flex align-items-center justify-content-center '>
-                            <div className='col-2 d-flex justify-content-end '>
-                                <img src={infoImage} className='img-fluid'/>
-                            </div>
-                            <div className='col-10 d-flex align-items-center m-0'>
-                                <p className='display-6 inter-regular m-0'>For best results, speak clearly into the microphone</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className='row mt-5 '>
-                        <div className='row border'>
-                            <p className='display-5 p-5 border'>{sentenceArray[sentenceCount]}</p>
-                        </div>
-                        <div className='row d-flex justify-content-center align-items-center'>
-                            <div className='col-6 d-flex justify-content-center align-items-center border'>
-                                <div className='arrow-image'>
-                                    <img src={prevImage} alt='Previous' onClick={() => incrementCount(0)}/>
-                                </div>
-                                <p className='inter-bold'>{sentenceCount + 1}</p>
-                                <div className='arrow-image'>
-                                    <img src={nextImage} alt='Next' onClick={() => incrementCount(1)}/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                        
-
-                    <div className='row'>
-                        
-                    </div>
-                </div>
-                <div className='col'>
-                    three
-                </div>
+        <div className='body-record'>
+            <Navigation active={2} />
+            <h1 className='title'>Record your voice</h1>
+            <div className='reminder'>
+                <FontAwesomeIcon className='info' icon={faCircleInfo} />
+                <h6>For best result speak clearly in microphone</h6>
             </div>
+
+            <h1 className='sentence'>{sentenceArray[sentenceCount]}</h1>
+
+            <div className='progress'>
+                <FontAwesomeIcon className='next-prev' icon={faAngleLeft} onClick={() => incrementCount(0)} />
+                <h4>{sentenceCount + 1}</h4>
+                <FontAwesomeIcon className='next-prev' icon={faAngleRight} onClick={() => incrementCount(1)} />
+            </div>
+
+            <div className="mic">
+                <FontAwesomeIcon icon={faMicrophone} />
+            </div>
+
+            <p className='note'>Note: we need to analyze a short audio sample focusing on aspects like how you sound, the energy in your voice, and your speaking pace. Your privacy is important to us. Your voice recordings will be anonymized and used solely for voice recognition technology.</p>
         </div>
         
     )
 }
 
 export default Record
-
-// <div className='body-container'>
-        //     <div className='div-side'>
-        //     </div>
-
-        //     <div className='div-center'>
-
-        //         <div className='title-container'>
-        //             <h1 className='inter-bold record'>Record your voice</h1>
-        //             <div className='container'>
-        //                 <img src={infoImage} className='info-image' alt='info'/>
-        //                 <p className='inter-regular info-paragraph'>For best results, speak clearly into the microphone</p>
-        //             </div>
-        //         </div>
-
-        //         <div className='sentence-container'>
-        //             <p className='inter-record sentence'>{sentenceArray[sentenceCount]}</p>
-        //         </div>
-
-        //         <div className='button-container'>
-
-        //             <div className='arrow-image'>
-        //                 <img src={prevImage} alt='Previous' onClick={() => incrementCount(0)}/>
-        //             </div>
-
-        //             <div>
-        //                 <p className='inter-bold'>{sentenceCount + 1}</p>
-        //             </div>
-
-        //             <div className='arrow-image'>
-        //                 <img src={nextImage} alt='Next' onClick={() => incrementCount(1)}/>
-        //             </div>
-
-        //         </div>
-
-        //     </div>
-            
-        //     <div className='div-side'>
-        //     </div>
-        // </div>
