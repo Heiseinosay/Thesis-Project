@@ -6,7 +6,6 @@ function Result() {
         <div>
             <h1>Result</h1>
             <Navigation active="3" />
-
         </div>
     )
 }
