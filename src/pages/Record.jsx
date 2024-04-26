@@ -1,4 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.min.css'
 import '../style/root.css'
 import '../style/font.css'
 import '../style/record.css'
@@ -11,12 +10,7 @@ import { faAngleLeft } from '@fortawesome/free-solid-svg-icons'
 import { faMicrophone } from '@fortawesome/free-solid-svg-icons'
 
 import Navigation from '../components/NavigationProgress'
-
-
-//images
-import infoImage from '../images/info.png'
-import nextImage from '../images/next.png'
-import prevImage from '../images/prev.png'
+import RecordButton from '../components/RecordingButton'
 
 
 //sentences
@@ -65,7 +59,8 @@ function Record() {
             </div>
 
             <div className="mic">
-                <FontAwesomeIcon icon={faMicrophone} />
+                <RecordButton/>
+                {/* <FontAwesomeIcon icon={faMicrophone} /> */}
             </div>
 
             <p className='inter-light note'><b className='inter-bold'>Note:</b> We need to analyze a short audio sample focusing on aspects like how you sound, the energy in your voice, and your speaking pace. Your privacy is important to us. Your voice recordings will be anonymized and used solely for voice recognition technology.</p>
