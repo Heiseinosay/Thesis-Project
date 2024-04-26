@@ -67,7 +67,7 @@
     cursor: pointer;
 }
 
-.mic {
+/* .mic {
     height: 60px;
     width: 60px;
     background-color: var(--green);
@@ -76,7 +76,7 @@
     align-items: center;
     justify-content: center;
     margin-top: 20px;
-}
+} */
 
 .icon-mic {
     height: 22px;
