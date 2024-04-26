@@ -1,0 +1,32 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+#loading-bar {
+    width: 250px;
+    height: 200px;
+    background-color: transparent;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+
+.loading-segment {
+    
+    width: 20px;
+    border-radius: 10px;
+    background-color: #1DB954;
+    animation: soundwave 1s infinite alternate;
+}
+
+@keyframes soundwave {
+    0% { height: 20px; }
+    100% { height: 80px; }
+}
