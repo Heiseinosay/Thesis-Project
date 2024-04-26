@@ -61,6 +61,7 @@
 .progress h4 {
     font-size: 18px;
 }
+
 .next-prev {
     height: 25px;
     cursor: pointer;
@@ -77,10 +78,36 @@
     margin-top: 20px;
 } */
 
+.icon-mic {
+    height: 22px;
+    color: var(--black);
+    transition: all ease-in-out;
+}
+
+.icon-mic:hover {
+    background-color: var(--greenHover);
+}
+
 .note {
     margin-top: 20px;
     width: 50%;
     /* border: 1px solid; */
     font-size: 14px;
     line-height: 30px;
+}
+
+.btn-detect {
+    height: 40px;
+    width: 80px;
+    cursor: pointer;
+    margin: 20px;
+    background-color: var(--green);
+    color: #ffffff;
+    border-radius: 3px;
+    border: none;
+    transition: 0.2s ease-in-out all;
+}
+
+.btn-detect:hover {
+    background-color: var(--greenHover);
 }

@@ -48,6 +48,11 @@
     border: none;
 }
 
+
+.btn-upload:hover {
+    background-color: var(--greenHover);
+}
+
 .btn-cancel {
     border: 2px var(--green) solid;
     color: var(--green);

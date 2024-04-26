@@ -1,7 +1,8 @@
 import '../style/root.css'
 import '../style/font.css'
 import '../style/record.css'
-import React, {Component, useState} from 'react'
+import React, { Component, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons'
@@ -12,33 +13,37 @@ import { faMicrophone } from '@fortawesome/free-solid-svg-icons'
 import Navigation from '../components/NavigationProgress'
 import RecordButton from '../components/RecordingButton'
 
-
 //sentences
-const sentenceArray = 
+const sentenceArray =
     ["That quick beige fox jumped in the air over each thin dog. Look out, I shout, for he's foiled you again, creating chaos.",
-    "Are those shy Eurasian footwear, cowboy chaps, or jolly earthmoving headgear?",
-    "The hungry purple dinosaur ate the kind, zingy fox, the jabbering crab, and the mad whale and started vending and quacking.",
-    "With tenure, Suzie’d have all the more leisure for yachting, but her publications are no good.",
-    "Shaw, those twelve beige hooks are joined if I patch a young, gooey mouth.",
-    "The beige hue on the waters of the loch impressed all, including the French queen, before she heard that symphony again, just as young Arthur wanted.",
-    "Arthur stood and watched them hurry away. \"I think I'll go tomorrow,\" he calmly said to himself, but then again \"I don't know; it's so nice and snug here.\"",
-    "The fuzzy caterpillar slowly crawled up the tall oak tree, seeking shelter from the impending rain.",
-    "Ivan fixed the broken lock on the rusty gate with a sturdy hammer and a handful of nails.",
-    "The mischievous child giggled as he splashed in the muddy puddles, making a mess of his new shoes."]
+        "Are those shy Eurasian footwear, cowboy chaps, or jolly earthmoving headgear?",
+        "The hungry purple dinosaur ate the kind, zingy fox, the jabbering crab, and the mad whale and started vending and quacking.",
+        "With tenure, Suzie’d have all the more leisure for yachting, but her publications are no good.",
+        "Shaw, those twelve beige hooks are joined if I patch a young, gooey mouth.",
+        "The beige hue on the waters of the loch impressed all, including the French queen, before she heard that symphony again, just as young Arthur wanted.",
+        "Arthur stood and watched them hurry away. \"I think I'll go tomorrow,\" he calmly said to himself, but then again \"I don't know; it's so nice and snug here.\"",
+        "The fuzzy caterpillar slowly crawled up the tall oak tree, seeking shelter from the impending rain.",
+        "Ivan fixed the broken lock on the rusty gate with a sturdy hammer and a handful of nails.",
+        "The mischievous child giggled as he splashed in the muddy puddles, making a mess of his new shoes."]
 
 
 
 function Record() {
     //changing sentences  
+    const navigate = useNavigate();
     const [sentenceCount, setCount] = useState(0);
     const incrementCount = (polarity) => {
-        if (polarity == 0 && sentenceCount > 0){
+        if (polarity == 0 && sentenceCount > 0) {
             setCount(sentenceCount - 1)
             console.log(sentenceCount)
-        } else if (polarity == 1 && sentenceCount < 9){
+        } else if (polarity == 1 && sentenceCount < 9) {
             setCount(sentenceCount + 1)
             console.log(sentenceCount)
         }
+    }
+
+    const handleDetect = () => {
+        navigate("/loading")
     }
 
     return (
@@ -64,8 +69,9 @@ function Record() {
             </div>
 
             <p className='inter-light note'><b className='inter-bold'>Note:</b> We need to analyze a short audio sample focusing on aspects like how you sound, the energy in your voice, and your speaking pace. Your privacy is important to us. Your voice recordings will be anonymized and used solely for voice recognition technology.</p>
+            {sentenceCount === 9 ? <button className='btn-detect' onClick={handleDetect}>Detect</button> : null}
         </div>
-        
+
     )
 }
 
