@@ -30,7 +30,7 @@ function Loading() {
     }, [navigate]); // Add navigate to dependency array to avoid warning
 
     return (
-        <div>
+        <div className='body-loading'>
             <h1>Detecting...</h1>
             <div id="loading-bar">
                 <div className="loading-segment"></div>
