@@ -64,7 +64,7 @@ function Record() {
             </div>
 
             <div className="mic">
-                <RecordButton/>
+                <RecordButton />
                 {/* <FontAwesomeIcon icon={faMicrophone} /> */}
             </div>
 

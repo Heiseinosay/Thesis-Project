@@ -8,7 +8,7 @@ function Result() {
             <div className='result-title'>
                 {/* <h4>The Audio is</h4> */}
                 <div className="title-1 titles inter-regular">
-                    <h1>AI Generate</h1>
+                    <h1>AI Generated</h1>
                     <p>confidence score: 95%</p>
                 </div>
                 <div className="title-2 titles inter-regular">

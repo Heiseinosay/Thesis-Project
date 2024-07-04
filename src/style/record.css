@@ -1,3 +1,15 @@
+* {
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE10+/Edge */
+    user-select: none;
+    /* Standard */
+
+}
+
 .body-record {
     height: 100vh;
     width: 100%;
@@ -94,6 +106,7 @@
     /* border: 1px solid; */
     font-size: 14px;
     line-height: 30px;
+
 }
 
 .btn-detect {
