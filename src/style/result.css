@@ -1,0 +1,177 @@
+.body-result {
+    height: fit-content;
+    width: 100%;
+    /* border: 1px solid; */
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    /* border: 1px solid; */
+}
+
+.result-title {
+    /* border: 1px solid; */
+    width: 90%;
+    height: fit-content;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.titles {
+    /* border: 1px solid; */
+    text-align: left;
+}
+
+.titles h1 {
+    font-size: 32px;
+}
+
+.title-2 {
+    margin-left: 20px;
+}
+
+.result-tag {
+    padding: 30px 0;
+    color: var(--grey);
+}
+
+.result-container {
+    height: 350px;
+    width: 60%;
+    min-width: 350px;
+    /* border: 1px solid; */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.result-label {
+    /* border: 1px solid; */
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    justify-content: space-evenly;
+    color: var(--black);
+    font-size: 12px;
+    width: 20%;
+    height: 100%;
+    padding-right: 20px;
+    border-right: 6px var(--grey) solid;
+}
+
+.chart {
+    height: 80%;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* *BARS */
+.bar-group {
+    /* border: 1px solid; */
+    height: fit-content;
+    width: 100%;
+}
+
+.human-bar {
+    background-color: var(--green);
+    height: 20px;
+    width: 80%;
+    text-align: right;
+    padding-right: 8px;
+    color: #ffffff;
+}
+
+.ai-bar {
+    background-color: var(--blue);
+    margin-top: 6px;
+    height: 20px;
+    text-align: right;
+    padding-right: 8px;
+    color: #ffffff;
+}
+
+.human1 {
+    width: 90%;
+}
+
+.ai1 {
+    width: 80%;
+}
+
+.human2 {
+    width: 95%;
+}
+
+.ai2 {
+    width: 75%;
+}
+
+.human3 {
+    width: 67%;
+}
+
+.ai3 {
+    width: 85%;
+}
+
+.human4 {
+    width: 77%;
+}
+
+.ai4 {
+    width: 58%;
+}
+
+
+.chart-label {
+    margin-top: 20px;
+    /* border: 1px solid; */
+    width: 90%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.label {
+    /* border: 1px solid; */
+    display: flex;
+    align-items: center;
+}
+
+.label-box-1 {
+    height: 20px;
+    width: 20px;
+    background-color: var(--green);
+}
+
+.label-box-2 {
+    margin-left: 20px;
+    height: 20px;
+    width: 20px;
+    background-color: var(--blue);
+}
+
+.label p,
+.label p {
+    margin-left: 8px;
+}
+
+.chart-title {
+    color: var(--black);
+    font-size: 20px;
+    margin: 20px 0;
+}
+
+.body-result>a {
+    color: var(--grey);
+}
