@@ -23,7 +23,7 @@ function Upload() {
             </div>
             <div className="column column-midle">
                 <h1 className='inter-bold'>Verify Audio</h1>
-                <DropZone />
+                <DropZone/>
             </div>
             <div className="column"></div>
             <Navigation active={1} />

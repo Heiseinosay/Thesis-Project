@@ -1,7 +1,7 @@
 import '../style/root.css'
 import '../style/font.css'
 import '../style/record.css'
-import React, { Component, useState, useEffect } from 'react'
+import React, { Component, useState, useEffect, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -15,6 +15,7 @@ import Navigation from '../components/NavigationProgress'
 import RecordButton from '../components/RecordingButton'
 import { useLoading } from '../components/LoadingProvider'
 import Loading from './Loading'
+import { DataContext } from '../components/DataContext';
 
 //sentences
 const sentenceArray =
@@ -32,9 +33,10 @@ const sentenceArray =
 
 
 function Record() {
+    const { setRecordData } = useContext(DataContext);
     //changing sentences  
     const navigate = useNavigate();
-    const {loading, setLoading} = useLoading();
+    const [loading, setLoading] = useState(false);
     const [sentenceCount, setCount] = useState(0);
     const [recordings, setRecordings] = useState(Array(10).fill(null));
     
@@ -50,12 +52,10 @@ function Record() {
 
     const handleDetect = async () => {
         const formData = new FormData();
-        recordings.forEach((recordings, index)=> {
-            formData.append('audio_files', recordings, `audio_${index}.mp3`)
+        recordings.forEach((recording, index)=> {
+            const audFile = new File([recording], `Recording_${index+1}.mp3`, {type: 'audio/mp3'})
+            formData.append('audio_files', audFile);
         });
-        console.log("recordings", formData)
-
-        
 
         try{
             setLoading(true);
@@ -64,19 +64,16 @@ function Record() {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-
             console.log('Audio submitted successfully:', response.data);
+            setRecordData(response.data);
             navigate("/result")
         } catch(error) {
             console.error('Error submitting audio:', error);
         } finally {
             setLoading(false);
-        } 
+        }
 
-        
-        
-
-    }
+    };
 
     const handleAudioSubmit = (audioBlob) => {
         setRecordings((prevRecordings) => {

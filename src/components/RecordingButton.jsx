@@ -37,13 +37,20 @@ const RecordingButton = ({onAudioSubmit}) => {
             chunksRef.current = [];
 
             mediaRecorder.ondataavailable = e =>{
-                chunksRef.current.push(e.data);
+                if (e.data.size > 0){
+                    chunksRef.current.push(e.data);
+                } else{
+                    alert("No audio captured. Try recording it again.")
+                }
+                
             };
 
-            mediaRecorder.onstop = () => {
+            mediaRecorder.onstop = async () => {
                 const blob = new Blob(chunksRef.current, {type: 'audio/mpeg'});
+                const webURL = URL.createObjectURL(blob)
+                setAudioLink(webURL);
                 setAudioBlob(blob)
-                setAudioLink(URL.createObjectURL(blob));
+                
                 // const updatedAudioURLs = [...audioURLs];
                 // updatedAudioURLs[currentIndex] = audioUrl;
             };
@@ -75,10 +82,10 @@ const RecordingButton = ({onAudioSubmit}) => {
     };
 
     const handleRetry = () => {
-        setShowRecordingButton(true);
-        setConfirmation(false);
         setAudioBlob(null);
         setAudioLink(null);
+        setShowRecordingButton(true);
+        setConfirmation(false);
         // const updatedAudioURLs = [...audioURLs];
         // updatedAudioURLs[currentIndex] = null;
         // setAudioURLs(updatedAudioURLs);
