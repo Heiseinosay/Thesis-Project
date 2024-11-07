@@ -10,7 +10,7 @@ import Record from '../pages/Record';
 import { ariaHidden } from "@mui/material/Modal/ModalManager";
 import { set } from "animejs";
 
-const RecordingButton = ({onAudioSubmit}) => {
+const RecordingButton = ({onAudioSubmit, onStart, onEnd}) => {
     const [isRecording, setIsRecording] = useState(false);
     const [showRecordingButton, setShowRecordingButton] = useState(true); 
     const [showConfirmation, setConfirmation] = useState(false)
@@ -23,6 +23,7 @@ const RecordingButton = ({onAudioSubmit}) => {
     const handleImageClick = () =>{
         if (!isRecording){
             startRecording();
+            onStart()
         } else{
             stopRecording();
         }
@@ -46,39 +47,6 @@ const RecordingButton = ({onAudioSubmit}) => {
           }
         );
       };
-    // const startRecording = () => {
-    //     navigator.mediaDevices.getUserMedia({ audio:true})
-    //     .then(stream => {
-    //         const mediaRecorder = new MediaRecorder(stream);
-    //         mediaRecorderRef.current = mediaRecorder;
-    //         chunksRef.current = [];
-
-    //         mediaRecorder.ondataavailable = e =>{
-    //             if (e.data.size > 0){
-    //                 chunksRef.current.push(e.data);
-    //             } else{
-    //                 alert("No audio captured. Try recording it again.")
-    //             }
-                
-    //         };
-
-    //         mediaRecorder.onstop = async () => {
-    //             const blob = new Blob(chunksRef.current, {type: 'audio/'});
-    //             const webURL = URL.createObjectURL(blob)
-    //             setAudioLink(webURL);
-    //             setAudioBlob(blob);
-                
-    //             // const updatedAudioURLs = [...audioURLs];
-    //             // updatedAudioURLs[currentIndex] = audioUrl;
-    //         };
-
-    //         mediaRecorder.start();
-    //         setIsRecording(true);
-    //     })
-    //     .catch(error =>{
-    //         console.error('Error accessing microphone', error);
-    //     });
-    // };
 
     const stopRecording = () => {
         Mp3Recorder.current
@@ -102,11 +70,13 @@ const RecordingButton = ({onAudioSubmit}) => {
                     } else {
                         console.log('Invalid Audio Duration', duration)
                         alert("Audio must at least have a 1 second duration. Please try recording again.");
+                        onEnd()
                     }
                 };
                 audio.onerror = () => {
                     console.error("Error loading audio metadata.");
                     alert("Audio not captured. Please try recording again.");
+                    onEnd()
                 };
         })
         .catch((e) => console.log("Error stopping recording", e));
@@ -120,6 +90,7 @@ const RecordingButton = ({onAudioSubmit}) => {
         }
         setShowRecordingButton(true);
         setConfirmation(false);
+        onEnd()
     };
 
     const handleRetry = () => {
@@ -127,13 +98,14 @@ const RecordingButton = ({onAudioSubmit}) => {
         setAudioLink(null);
         setShowRecordingButton(true);
         setConfirmation(false);
+        onEnd()
     };
 
     return(
         <div className="mic">
             {audioLink && <audio controls className='playback' ref={audioRef} type={'audio/mpeg'} src={audioLink}/>}
             {showRecordingButton && (
-                <FontAwesomeIcon className="record" icon={isRecording ? faStop : faMicrophone} onClick={handleImageClick} />
+                <FontAwesomeIcon className="record" icon={isRecording ? faStop : faMicrophone} onClick={handleImageClick}/>
             )}
 
             {showConfirmation && (

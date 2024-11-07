@@ -35,3 +35,7 @@
     border-radius: 50%;
     color: var(--black);
 }
+
+.record, .check, .again {
+    cursor: pointer;
+}
