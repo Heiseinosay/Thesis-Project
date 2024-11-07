@@ -10,7 +10,7 @@ npm start
 ```
 4. cd to server
 
-5. create venv => python -m venv 
+5. create venv => python -m venv venv
 
 6. then install packages => pip install -r requirements.txt
 
