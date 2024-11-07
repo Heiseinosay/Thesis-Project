@@ -1,10 +1,13 @@
 server/venv/
-node_modules/
-.vscode/
 server/main - Copy.py
 server/main - Copy (2).py
-test.ipynb
-test.png
-test_2.ipynb
+server/test.ipynb
+server/test.png
+server/test_2.ipynb
+server/synthetic/
+
+
+node_modules/
+.vscode/
 src/pages/Record - Copy.jsx
 src/components/RecordingButton - Copy.jsx
