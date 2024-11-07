@@ -53,8 +53,7 @@ function Record() {
     const handleDetect = async () => {
         const formData = new FormData();
         recordings.forEach((recording, index)=> {
-            const audFile = new File([recording], `Recording_${index+1}.mp3`, {type: 'audio/mp3'})
-            formData.append('audio_files', audFile);
+            formData.append('audio_files', recording, `Recording_${index}.mp3`)
         });
 
         try{
@@ -140,10 +139,10 @@ function Record() {
                     {/* <FontAwesomeIcon icon={faMicrophone} /> */}
                 </div>
 
-                <p className='inter-light note'><b className='inter-bold'>Note:</b> We need to analyze a short audio sample focusing on aspects like how you sound, the energy in your voice, and your speaking pace. Your privacy is important to us. Your voice recordings will be anonymized and used solely for voice recognition technology.</p>
                 {recordings.every(recording => recording != null) ? (
                     <button className='btn-detect' onClick={handleDetect}>Detect</button>
                 ): null}
+                <p className='inter-light note'><b className='inter-bold'>Note:</b> We need to analyze a short audio sample focusing on aspects like how you sound, the energy in your voice, and your speaking pace. Your privacy is important to us. Your voice recordings will be anonymized and used solely for voice recognition technology.</p>
                 {/* <button className="test" onClick={handleTest}>TEST</button> */}
                 </>
             )}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import '../style/tablescale.css'
 
 const TableScale = ({ data }) => {
   const dataObject = Object.values(data)[0];
@@ -9,7 +10,7 @@ const TableScale = ({ data }) => {
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden'}}>
-    <TableContainer sx={{ maxHeight: 440 }}>
+    <TableContainer id='scrollbar1' sx={{ maxHeight: 440 }}>
       <Table stickyHeader sx={{ maxWidth: 650 }} aria-label="a dense table">
         <TableHead >
           <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: 'ActiveBorder'}}>

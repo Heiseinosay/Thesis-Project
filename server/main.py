@@ -5,7 +5,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Input
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from collections import OrderedDict
+import matplotlib.pyplot as plt
 
 import librosa
 import numpy as np
@@ -14,6 +14,7 @@ import json
 import joblib
 import math
 import io
+import base64
 
 app = Flask(__name__)
 cors = CORS(app, origins='*')
@@ -98,7 +99,7 @@ def process_audio_segments(files, segment_duration = 2):
             sc_values.append(sc)
             sb_values.append(sb)
 
-            file_names.append(f"Segment {segment_number} {audio_file.filename}")
+            file_names.append(f"Segment {segment_number} {audio_file}")
 
     return file_names, mfcc_features, rms_values, zcr_values, sc_values, sb_values
 
@@ -182,6 +183,35 @@ def average(confidence_scores):
 #             "message": "The audi0 file is likely AI-generated (deep fake).",
 #             "mean_features": mean_features.tolist()
 #         }), 201
+def plot(uploaded_only_df, speaker_only_df, xlabel, ylabel, title):
+    if uploaded_only_df.shape[0] < speaker_only_df.shape[0]:
+        speaker_only_df = speaker_only_df.sample(n=uploaded_only_df.shape[0], random_state=1).reset_index(drop=True)
+    elif uploaded_only_df.shape[0] > speaker_only_df.shape[0]:
+        uploaded_only_df = uploaded_only_df.sample(n-speaker_only_df.shape[0], random_state=1).reset_index(drop=True)
+
+    uploaded_sequence = uploaded_only_df.mean(axis=1)
+    speaker_sequence = speaker_only_df.mean(axis=1)
+    plt.figure(figsize=(12, 6))
+    plt.plot(uploaded_sequence, linestyle='-', color='red', label='Uploaded')
+    plt.plot(speaker_sequence, linestyle='-', color='green', label='Speaker')
+
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title)
+    plt.legend()
+
+    # convert to base64
+    bytesIO = io.BytesIO()
+    plt.savefig(bytesIO, format='jpg')
+    bytesIO.seek(0)
+    base64_data = base64.b64encode(bytesIO.read()).decode()
+    return(base64_data)
+
+def isolate_df(upload_df, speaker_df, header):
+    u_data_df = upload_df[[col for col in upload_df.columns if col.startswith(header)]]
+    s_data_df = speaker_df[[col for col in speaker_df.columns if col.startswith(header)]]
+
+    return u_data_df, s_data_df
 
 @app.route("/api/upload", methods=['POST'])
 def audio_uploaded():
@@ -224,12 +254,11 @@ def audio_uploaded():
         # return prediction_result(reshape_mean, uploaded_mean_features)
         
         # return jsonify({"mean_features": uploaded_mean_features.tolist()}) # returns the extracted mfcc in list json format
-        
+
+
 @app.route("/api/record", methods=['POST'])
 def audio_record():
-    # if 'audio_files' not in request.files:
-    #     return jsonify({"error": "No file part"}), 400
-    
+
     files = request.files.getlist('audio_files')
     # return jsonify({"test": f"{files}"})
     if len(files) != 10:
@@ -238,7 +267,7 @@ def audio_record():
     for idx, file in enumerate(files):
         if file.filename == '':
             return jsonify({"error": f"File {idx+1} is missing a name"}), 400
-    
+
     # return jsonify ({"testing": f"{files}"})
     global si_model
     if si_model is None:
@@ -284,21 +313,44 @@ def audio_record():
         si_model = speaker_identification_model
     
     
-    if segment_data is None:
-        return jsonify({'message': "segment_data is empty"}), 400
+    # if segment_data is None:
+    #     return jsonify({'message': "segment_data is empty"}), 400
     
     # test = ['spanish86_cloned.mp3']
     # testing = process_audio_segments(test)
     # si_segment_data_df = df_segment_data(*testing)
     # si_segment_data_values = si_segment_data_df.drop(columns=['File Name']).values
-    
     evaluate = evaluate_segments(segment_data, si_model, si_scaler)
     overall = average(evaluate)
+    
     # speaker_data = speaker_profile[sorted(speaker_profile.columns, key=lambda x: int(x[3:]))]
     speaker_data_json_df = speaker_data.to_dict(orient="records")
+    # return jsonify({'gumagana': "gumagana"})
+    mfcc = isolate_df(segment_data, speaker_profile, 'MFCC')
+    mfcc_plot = plot(*mfcc, 'Segments', 'mean MFCC value', 'Mean MFCC')
+    
+    rms = isolate_df(segment_data, speaker_profile, 'RMS')
+    rms_plot = plot(*rms, 'Segments', 'mean RMS value', 'Mean RMS')
+    
+    zcr = isolate_df(segment_data, speaker_profile, 'ZCR')
+    zcr_plot = plot(*zcr, 'Segments', 'mean ZCR value', 'Mean ZCR')
+
+    sc = isolate_df(segment_data, speaker_profile, 'SpectralCentroid')
+    sc_plot = plot(*sc, 'Segments', 'mean Spectral Centroid value', 'Mean Spectral Centroid')
+    
+    sb = isolate_df(segment_data, speaker_profile, 'SpectralBandwidth')
+    sb_plot = plot(*sb, 'Segments','mean Spectral Bandwidth value', 'Mean Spectral Bandwidth')
+    
+
+    
 
     response_data = {
         "overall": overall,
+        "mfcc_plot": mfcc_plot,
+        "rms_plot": rms_plot,
+        "zcr_plot": zcr_plot,
+        "sc_plot": sc_plot,
+        "sb_plot": sb_plot,
         "uploaded_data": speaker_data_json_df
     }
 

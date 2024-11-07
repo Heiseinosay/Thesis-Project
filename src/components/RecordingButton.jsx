@@ -6,18 +6,34 @@ import { faStop } from '@fortawesome/free-solid-svg-icons'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
 import Record from '../pages/Record';
+import { FFmpeg} from '@ffmpeg/ffmpeg';
+import { fetchFile, toBlobURL } from '@ffmpeg/util'
 
+// const ffmpeg = new FFmpeg({log: true});
+
+// const convertBlobToMp3 = async (blob) => {
+//     await ffmpeg.load();
+
+//     const data = await fetchFile(blob);
+//     ffmpeg.FS('writeFile', 'input.weba', data);
+
+//     await ffmpeg.run('-i', 'input.weba', 'audio.mp3');
+
+//     const mp3Data = ffmpeg.FS('readFile', 'audio.mp3');
+
+//     return mp3Data;
+// }
 const RecordingButton = ({onAudioSubmit}) => {
     const [isRecording, setIsRecording] = useState(false);
     const [showRecordingButton, setShowRecordingButton] = useState(true); 
     const [showConfirmation, setConfirmation] = useState(false)
     const [audioBlob, setAudioBlob] = useState(null);
     const [audioLink, setAudioLink] = useState(null);
-    // const [audioURLs, setAudioURLs] = useState(Array(10).fill(null));
 
     const audioRef = useRef(null);
     const mediaRecorderRef = useRef(null);
     const chunksRef = useRef([]);
+
 
     const handleImageClick = () =>{
         if (!isRecording){
@@ -28,7 +44,7 @@ const RecordingButton = ({onAudioSubmit}) => {
             setConfirmation(true);
         }
     };
-
+    
     const startRecording = () => {
         navigator.mediaDevices.getUserMedia({ audio:true})
         .then(stream => {
@@ -49,7 +65,7 @@ const RecordingButton = ({onAudioSubmit}) => {
                 const blob = new Blob(chunksRef.current, {type: 'audio/mpeg'});
                 const webURL = URL.createObjectURL(blob)
                 setAudioLink(webURL);
-                setAudioBlob(blob)
+                setAudioBlob(blob);
                 
                 // const updatedAudioURLs = [...audioURLs];
                 // updatedAudioURLs[currentIndex] = audioUrl;
@@ -117,7 +133,7 @@ const RecordingButton = ({onAudioSubmit}) => {
 
     return(
         <div className="mic">
-            {audioLink && <audio controls className='playback' ref={audioRef} src={audioLink}/>}
+            {audioLink && <audio controls className='playback' ref={audioRef} type={'audio/mp3'} src={audioLink}/>}
             {/* <FontAwesomeIcon className="record" icon={icon} onClick={()=>{handleImageClick(); setAudioURL(null)}} /> */}
             {showRecordingButton && (
                 <FontAwesomeIcon className="record" icon={isRecording ? faStop : faMicrophone} onClick={handleImageClick} />

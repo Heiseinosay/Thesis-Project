@@ -6,6 +6,7 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@ffmpeg/ffmpeg": "^0.12.10",
+    "@ffmpeg/util": "^0.12.1",
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
     "@fortawesome/free-brands-svg-icons": "^6.5.2",
     "@fortawesome/free-regular-svg-icons": "^6.5.2",
@@ -18,10 +19,13 @@
     "animejs": "^3.2.2",
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
+    "buffer": "^6.0.3",
+    "mic-recorder-to-mp3": "^2.2.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.23.0",
     "react-scripts": "5.0.1",
+    "react-simple-image-viewer": "^1.2.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

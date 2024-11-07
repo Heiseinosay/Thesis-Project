@@ -97,7 +97,7 @@ function DragDropFiles() {
         formData.append("audio_file", files[0]);
 
         try{
-            // navigate("/record")
+            navigate("/record")
             const response = await axios.post('http://127.0.0.1:8080/api/upload', formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
@@ -106,7 +106,7 @@ function DragDropFiles() {
             
             console.log('Upload response:', response.data);
             setUploadData(response.data);
-            navigate("/result");
+            
         } catch (err){
             console.error('Upload error:', err)
         }
