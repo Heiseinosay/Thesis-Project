@@ -5,24 +5,11 @@ import { faMicrophone } from '@fortawesome/free-solid-svg-icons'
 import { faStop } from '@fortawesome/free-solid-svg-icons'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
+import MicRecorder from 'mic-recorder-to-mp3';
 import Record from '../pages/Record';
-import { FFmpeg} from '@ffmpeg/ffmpeg';
-import { fetchFile, toBlobURL } from '@ffmpeg/util'
+import { ariaHidden } from "@mui/material/Modal/ModalManager";
+import { set } from "animejs";
 
-// const ffmpeg = new FFmpeg({log: true});
-
-// const convertBlobToMp3 = async (blob) => {
-//     await ffmpeg.load();
-
-//     const data = await fetchFile(blob);
-//     ffmpeg.FS('writeFile', 'input.weba', data);
-
-//     await ffmpeg.run('-i', 'input.weba', 'audio.mp3');
-
-//     const mp3Data = ffmpeg.FS('readFile', 'audio.mp3');
-
-//     return mp3Data;
-// }
 const RecordingButton = ({onAudioSubmit}) => {
     const [isRecording, setIsRecording] = useState(false);
     const [showRecordingButton, setShowRecordingButton] = useState(true); 
@@ -31,58 +18,100 @@ const RecordingButton = ({onAudioSubmit}) => {
     const [audioLink, setAudioLink] = useState(null);
 
     const audioRef = useRef(null);
-    const mediaRecorderRef = useRef(null);
-    const chunksRef = useRef([]);
-
+    const Mp3Recorder = useRef(new MicRecorder({ bitRate: 128 }));
 
     const handleImageClick = () =>{
         if (!isRecording){
             startRecording();
         } else{
             stopRecording();
-            setShowRecordingButton(false);
-            setConfirmation(true);
         }
     };
     
     const startRecording = () => {
-        navigator.mediaDevices.getUserMedia({ audio:true})
-        .then(stream => {
-            const mediaRecorder = new MediaRecorder(stream);
-            mediaRecorderRef.current = mediaRecorder;
-            chunksRef.current = [];
+        navigator.getUserMedia(
+          { audio: true },
+          () => {
+            console.log('Permission Granted');
+            Mp3Recorder.current
+              .start()
+              .then(() => {
+                setIsRecording(true);
+              })
+              .catch((e) => console.error(e));
+          },
+          () => {
+            console.log('Permission Denied');
+            alert('Microphone permission is denied');
+          }
+        );
+      };
+    // const startRecording = () => {
+    //     navigator.mediaDevices.getUserMedia({ audio:true})
+    //     .then(stream => {
+    //         const mediaRecorder = new MediaRecorder(stream);
+    //         mediaRecorderRef.current = mediaRecorder;
+    //         chunksRef.current = [];
 
-            mediaRecorder.ondataavailable = e =>{
-                if (e.data.size > 0){
-                    chunksRef.current.push(e.data);
-                } else{
-                    alert("No audio captured. Try recording it again.")
-                }
+    //         mediaRecorder.ondataavailable = e =>{
+    //             if (e.data.size > 0){
+    //                 chunksRef.current.push(e.data);
+    //             } else{
+    //                 alert("No audio captured. Try recording it again.")
+    //             }
                 
-            };
+    //         };
 
-            mediaRecorder.onstop = async () => {
-                const blob = new Blob(chunksRef.current, {type: 'audio/mpeg'});
-                const webURL = URL.createObjectURL(blob)
-                setAudioLink(webURL);
-                setAudioBlob(blob);
+    //         mediaRecorder.onstop = async () => {
+    //             const blob = new Blob(chunksRef.current, {type: 'audio/'});
+    //             const webURL = URL.createObjectURL(blob)
+    //             setAudioLink(webURL);
+    //             setAudioBlob(blob);
                 
-                // const updatedAudioURLs = [...audioURLs];
-                // updatedAudioURLs[currentIndex] = audioUrl;
-            };
+    //             // const updatedAudioURLs = [...audioURLs];
+    //             // updatedAudioURLs[currentIndex] = audioUrl;
+    //         };
 
-            mediaRecorder.start();
-            setIsRecording(true);
-        })
-        .catch(error =>{
-            console.error('Error accessing microphone', error);
-        });
-    };
+    //         mediaRecorder.start();
+    //         setIsRecording(true);
+    //     })
+    //     .catch(error =>{
+    //         console.error('Error accessing microphone', error);
+    //     });
+    // };
 
     const stopRecording = () => {
-        mediaRecorderRef.current.stop();
-        setIsRecording(false);
+        Mp3Recorder.current
+            .stop()
+            .getMp3()
+            .then(([buffer, blob]) => {
+                console.log("Blob size:", blob.size);
+                setIsRecording(false);
+
+                const blobURL = URL.createObjectURL(blob);
+                console.log("Generated blob URL:", blobURL);
+
+                const audio = new Audio(blobURL);
+                 audio.onloadedmetadata = () => {
+                    const duration = audio.duration;
+                    if (duration > 1) {
+                        setAudioBlob(blob);
+                        setAudioLink(blobURL);
+                        setShowRecordingButton(false);
+                        setConfirmation(true);
+                    } else {
+                        console.log('Invalid Audio Duration', duration)
+                        alert("Audio must at least have a 1 second duration. Please try recording again.");
+                    }
+                };
+                audio.onerror = () => {
+                    console.error("Error loading audio metadata.");
+                    alert("Audio not captured. Please try recording again.");
+                };
+        })
+        .catch((e) => console.log("Error stopping recording", e));
     };
+
 
     const handleConfirm = () => {
         if (audioBlob) {
@@ -91,10 +120,6 @@ const RecordingButton = ({onAudioSubmit}) => {
         }
         setShowRecordingButton(true);
         setConfirmation(false);
-        
-
-        // setCurrentIndex(prevIndex => prevIndex + 1 );
-        // console.log(audioURLs)
     };
 
     const handleRetry = () => {
@@ -102,39 +127,11 @@ const RecordingButton = ({onAudioSubmit}) => {
         setAudioLink(null);
         setShowRecordingButton(true);
         setConfirmation(false);
-        // const updatedAudioURLs = [...audioURLs];
-        // updatedAudioURLs[currentIndex] = null;
-        // setAudioURLs(updatedAudioURLs);
     };
-
-    // let hideMic = document.querySelector('.record')
-    // hideMic.style.display = 'none';
-    // useEffect(() => {
-    //     const hideMic = document.querySelector('.record');
-    //     if (hideMic) {
-    //         hideMic.style.display = isRecording ? 'none' : 'block';
-    //     }
-    // }, [isRecording]);
-
-    // const handleSubmit = async () => {
-    //     const formData = new FormData();
-    //     audioURLs.forEach((audioBlob, index)=> {
-    //         if (audioBlob) {
-    //             formData.append('audio_${index}', audioBlob, 'audio_${index}.mp3');
-    //         }
-    //     });
-
-    //     try {
-    //         onAudioSubmit(formData);
-    //     } catch(error){
-    //         console.error('Error uploading audio:', error)
-    //     }
-    // };
 
     return(
         <div className="mic">
-            {audioLink && <audio controls className='playback' ref={audioRef} type={'audio/mp3'} src={audioLink}/>}
-            {/* <FontAwesomeIcon className="record" icon={icon} onClick={()=>{handleImageClick(); setAudioURL(null)}} /> */}
+            {audioLink && <audio controls className='playback' ref={audioRef} type={'audio/mpeg'} src={audioLink}/>}
             {showRecordingButton && (
                 <FontAwesomeIcon className="record" icon={isRecording ? faStop : faMicrophone} onClick={handleImageClick} />
             )}

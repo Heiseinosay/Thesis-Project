@@ -13,7 +13,6 @@ import { faMicrophone } from '@fortawesome/free-solid-svg-icons'
 
 import Navigation from '../components/NavigationProgress'
 import RecordButton from '../components/RecordingButton'
-import { useLoading } from '../components/LoadingProvider'
 import Loading from './Loading'
 import { DataContext } from '../components/DataContext';
 

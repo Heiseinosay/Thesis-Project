@@ -23,6 +23,7 @@ cors = CORS(app, origins='*')
 uploaded_audio = None
 segment_data = None
 speaker_data = None
+segment_data_df = None
 
 # load the model
 df_model = load_model('models/DeepFake_model_ver5_full.keras')
@@ -104,16 +105,6 @@ def process_audio_segments(files, segment_duration = 2):
     return file_names, mfcc_features, rms_values, zcr_values, sc_values, sb_values
 
 # segment data for deepfake detection
-def numpy_segment_data(file_names, mfcc_features, rms_values, zcr_values, sc_values, sb_values):
-    mfcc_features = np.array(mfcc_features)
-    rms_values = np.array(rms_values)
-    zcr_values = np.array(zcr_values)
-    sc_values = np.array(sc_values)
-    sb_values = np.array(sb_values)
-
-    segment_data = np.column_stack((mfcc_features, rms_values, zcr_values, sc_values, sb_values))
-    return segment_data
-
 def df_segment_data(file_names, mfcc_features, rms_values, zcr_values, sc_values, sb_values):
     mfcc_df = pd.DataFrame(mfcc_features, columns=[f'MFCC{i+1}' for i in range(mfcc_features[0].shape[0])])
     rms_df = pd.DataFrame(rms_values, columns=[f'RMS{i+1}' for i in range(len(rms_values[0]))])
@@ -123,17 +114,6 @@ def df_segment_data(file_names, mfcc_features, rms_values, zcr_values, sc_values
 
     combined_df = pd.concat([pd.DataFrame(file_names, columns=['File Name']), mfcc_df, rms_df, zcr_df, sc_df, sb_df], axis=1)
     return combined_df
-
-# segment data for speaker identification
-# def df_segment_data(mfcc_features, rms_values, zcr_values, sc_values, sb_values):
-#     mfcc_df = pd.DataFrame(mfcc_features)
-#     rms_df = pd.DataFrame(rms_values)
-#     zcr_df = pd.DataFrame(zcr_values)
-#     sc_df = pd.DataFrame(sc_values)
-#     sb_df = pd.DataFrame(sb_values)
-
-#     combined_df = pd.concat([mfcc_df, rms_df, zcr_df, sc_df, sb_df], axis=1)
-#     return combined_df
 
 def reshape_segment(segment_features, scaler):
     reshaped = scaler.transform([segment_features])
@@ -158,31 +138,6 @@ def average(confidence_scores):
     rounded = math.ceil(avg * 100)
     return rounded
 
-# def compute_mean_features(comprehensive_mfcc):
-#     mean_features = np.mean(comprehensive_mfcc.T, axis=0)
-#     return mean_features
-
-# # running to cnn model
-# def reshape(mean_features):
-#     num_features = mean_features.shape[0]
-#     print(num_features)
-#     mfcc_features_reshaped = mean_features.reshape(1, num_features, 1, 1)
-#     print(mfcc_features_reshaped)
-#     cnn_predict = model.predict(mfcc_features_reshaped)
-#     return cnn_predict
-#     # return jsonify({"result": cnn_predict.tolist()})
-
-# def prediction_result(cnn_result, mean_features):
-#     if cnn_result[0] > 0.5:
-#         return jsonify({
-#             "message": "The audio file is likely a legitimate human voice",
-#             "mean_features": mean_features.tolist()
-#             }), 201
-#     else:
-#         return jsonify({
-#             "message": "The audi0 file is likely AI-generated (deep fake).",
-#             "mean_features": mean_features.tolist()
-#         }), 201
 def plot(uploaded_only_df, speaker_only_df, xlabel, ylabel, title):
     if uploaded_only_df.shape[0] < speaker_only_df.shape[0]:
         speaker_only_df = speaker_only_df.sample(n=uploaded_only_df.shape[0], random_state=1).reset_index(drop=True)
@@ -224,6 +179,7 @@ def audio_uploaded():
     
     if file:
         global segment_data
+        global segment_data_df
         uploaded_audio = file
         processed_upload = process_audio_segments([uploaded_audio])
         segment_data_df = df_segment_data(*processed_upload)
@@ -233,7 +189,6 @@ def audio_uploaded():
         evaluate = evaluate_segments(segment_data, df_model, df_scaler)
         overall = average(evaluate)
 
-        # segment_data_df = segment_data_df[sorted(segment_data_df.columns, key=lambda x: int(x[3:]))]
         segment_data_json_df = segment_data_df.to_dict(orient="records")
         response_data = {
             "overall": overall,
@@ -243,32 +198,18 @@ def audio_uploaded():
         response_json = json.dumps(response_data)
         return Response(response_json, mimetype='application/json')
 
-        # uploaded_signal, uploaded_sr = pre_process(file)
-        # uploaded_audio_mfcc = extract_MFCC(uploaded_signal, uploaded_sr)
-        # rms, zcr, sc, sb = extract_features(uploaded_signal, uploaded_sr)
-        # combined_df = pd.concat([pd.DataFrame(uploaded_audio_mfcc, rms, zcr, sc, sb)], axis=1)
-        # combined_df = combined_df.values
-
-        # # uploaded_mean_features = compute_mean_features(uploaded_audio_mfcc)
-        # # reshape_mean = reshape(uploaded_mean_features)
-        # return prediction_result(reshape_mean, uploaded_mean_features)
-        
-        # return jsonify({"mean_features": uploaded_mean_features.tolist()}) # returns the extracted mfcc in list json format
-
 
 @app.route("/api/record", methods=['POST'])
 def audio_record():
 
     files = request.files.getlist('audio_files')
-    # return jsonify({"test": f"{files}"})
     if len(files) != 10:
         return jsonify({"error": f"Exactly 10 files are required. {len(files)}"}), 400
 
     for idx, file in enumerate(files):
         if file.filename == '':
             return jsonify({"error": f"File {idx+1} is missing a name"}), 400
-
-    # return jsonify ({"testing": f"{files}"})
+        
     global si_model
     if si_model is None:
         si_segment_data = process_audio_segments(files)
@@ -313,36 +254,28 @@ def audio_record():
         si_model = speaker_identification_model
     
     
-    # if segment_data is None:
-    #     return jsonify({'message': "segment_data is empty"}), 400
+    if segment_data is None:
+        return jsonify({'message': "Data is empty"}), 400
     
-    # test = ['spanish86_cloned.mp3']
-    # testing = process_audio_segments(test)
-    # si_segment_data_df = df_segment_data(*testing)
-    # si_segment_data_values = si_segment_data_df.drop(columns=['File Name']).values
     evaluate = evaluate_segments(segment_data, si_model, si_scaler)
     overall = average(evaluate)
     
-    # speaker_data = speaker_profile[sorted(speaker_profile.columns, key=lambda x: int(x[3:]))]
     speaker_data_json_df = speaker_data.to_dict(orient="records")
-    # return jsonify({'gumagana': "gumagana"})
-    mfcc = isolate_df(segment_data, speaker_profile, 'MFCC')
+
+    mfcc = isolate_df(segment_data_df, speaker_profile, 'MFCC')
     mfcc_plot = plot(*mfcc, 'Segments', 'mean MFCC value', 'Mean MFCC')
     
-    rms = isolate_df(segment_data, speaker_profile, 'RMS')
+    rms = isolate_df(segment_data_df, speaker_profile, 'RMS')
     rms_plot = plot(*rms, 'Segments', 'mean RMS value', 'Mean RMS')
     
-    zcr = isolate_df(segment_data, speaker_profile, 'ZCR')
+    zcr = isolate_df(segment_data_df, speaker_profile, 'ZCR')
     zcr_plot = plot(*zcr, 'Segments', 'mean ZCR value', 'Mean ZCR')
 
-    sc = isolate_df(segment_data, speaker_profile, 'SpectralCentroid')
+    sc = isolate_df(segment_data_df, speaker_profile, 'SpectralCentroid')
     sc_plot = plot(*sc, 'Segments', 'mean Spectral Centroid value', 'Mean Spectral Centroid')
     
-    sb = isolate_df(segment_data, speaker_profile, 'SpectralBandwidth')
+    sb = isolate_df(segment_data_df, speaker_profile, 'SpectralBandwidth')
     sb_plot = plot(*sb, 'Segments','mean Spectral Bandwidth value', 'Mean Spectral Bandwidth')
-    
-
-    
 
     response_data = {
         "overall": overall,
