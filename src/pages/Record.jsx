@@ -82,35 +82,11 @@ function Record() {
         });
 
         incrementCount(1)
-        // console.log(recordings);
-
-        // try{
-        //     const response = await axios.post('http://127.0.0.1:8080/api/record', formData, {
-        //         headers: {
-        //             'Content-Type': 'multipart/formdata',
-        //         },
-        //     });
-        //     console.log('Audio sumbitted successfully:', response.data);
-
-        // } catch (error){
-        //     console.error('Error submitting audio:', error);
-        // }
     };
 
     useEffect(() => {
         console.log("Updated recordings:", recordings);
     }, [recordings]);
-
-    // const handleTest = async () => {
-    //     try {
-    //         const response = await axios.post('http://127.0.0.1:8080/api/test');
-
-    //         // Check if the response is ok (status in the range 200-299)
-    //         console.log('Response data:', response.data); // Log the response data
-    //     } catch (error) {
-    //         console.error('Error submitting test request:', error); // Log any errors
-    //     }
-    // };
 
     return (
         <div className='body-record'>
@@ -138,10 +114,11 @@ function Record() {
                     {/* <FontAwesomeIcon icon={faMicrophone} /> */}
                 </div>
 
+                
+                <p className='inter-light note'><b className='inter-bold'>Note:</b> We need to analyze a short audio sample focusing on aspects like how you sound, the energy in your voice, and your speaking pace. Your privacy is important to us. Your voice recordings will be anonymized and used solely for voice recognition technology.</p>
                 {recordings.every(recording => recording != null) ? (
                     <button className='btn-detect' onClick={handleDetect}>Detect</button>
                 ): null}
-                <p className='inter-light note'><b className='inter-bold'>Note:</b> We need to analyze a short audio sample focusing on aspects like how you sound, the energy in your voice, and your speaking pace. Your privacy is important to us. Your voice recordings will be anonymized and used solely for voice recognition technology.</p>
                 {/* <button className="test" onClick={handleTest}>TEST</button> */}
                 </>
             )}
