@@ -94,7 +94,7 @@ function Result() {
                         </div>
                     </div>
                     <div className="details-holder">
-                        <details>
+                        <details open>
                             <summary>View Statistics</summary>
                             <div className='details-img-holder'>
                                 <div>

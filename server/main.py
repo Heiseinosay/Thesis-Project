@@ -22,12 +22,10 @@ cors = CORS(app, origins='*')
 # uploaded audio
 uploaded_audio = None
 segment_data = None
-speaker_data = None
 segment_data_df = None
 
 # load the model
 df_model = load_model('models/DeepFake_model_ver5_full.keras')
-si_model = None
 
 # load scaler
 df_scaler = joblib.load('scalers/df_scaler.pkl')
@@ -100,7 +98,7 @@ def process_audio_segments(files, segment_duration = 2):
             sc_values.append(sc)
             sb_values.append(sb)
 
-            file_names.append(f"Segment {segment_number} {audio_file}")
+            file_names.append(f"Segment {segment_number} {audio_file.filename}")
 
     return file_names, mfcc_features, rms_values, zcr_values, sc_values, sb_values
 
@@ -118,7 +116,7 @@ def df_segment_data(file_names, mfcc_features, rms_values, zcr_values, sc_values
 def reshape_segment(segment_features, scaler):
     reshaped = scaler.transform([segment_features])
     reshaped = reshaped.reshape(1, reshaped.shape[1], 1, 1)
-    print(reshaped)
+
     return reshaped
 
 def evaluate_segments(segment_data, model, scaler):
@@ -138,19 +136,13 @@ def average(confidence_scores):
     rounded = math.ceil(avg * 100)
     return rounded
 
-def plot(uploaded_only_df, speaker_only_df, xlabel, ylabel, title):
-    if uploaded_only_df.shape[0] < speaker_only_df.shape[0]:
-        speaker_only_df = speaker_only_df.sample(n=uploaded_only_df.shape[0], random_state=1).reset_index(drop=True)
-    elif uploaded_only_df.shape[0] > speaker_only_df.shape[0]:
-        uploaded_only_df = uploaded_only_df.sample(n-speaker_only_df.shape[0], random_state=1).reset_index(drop=True)
+def plot(uploaded_sequence, speaker_sequence, ylabel, title):
 
-    uploaded_sequence = uploaded_only_df.mean(axis=1)
-    speaker_sequence = speaker_only_df.mean(axis=1)
     plt.figure(figsize=(12, 6))
     plt.plot(uploaded_sequence, linestyle='-', color='red', label='Uploaded')
     plt.plot(speaker_sequence, linestyle='-', color='green', label='Speaker')
 
-    plt.xlabel(xlabel)
+    plt.xlabel('Feature Column')
     plt.ylabel(ylabel)
     plt.title(title)
     plt.legend()
@@ -165,8 +157,12 @@ def plot(uploaded_only_df, speaker_only_df, xlabel, ylabel, title):
 def isolate_df(upload_df, speaker_df, header):
     u_data_df = upload_df[[col for col in upload_df.columns if col.startswith(header)]]
     s_data_df = speaker_df[[col for col in speaker_df.columns if col.startswith(header)]]
+    u_data_df.columns = range(1, len(u_data_df.columns) + 1)
+    s_data_df.columns = range(1, len(s_data_df.columns) + 1)
+    u_mean =  u_data_df.mean(axis=0)
+    s_mean = s_data_df.mean(axis=0)
 
-    return u_data_df, s_data_df
+    return u_mean, s_mean
 
 @app.route("/api/upload", methods=['POST'])
 def audio_uploaded():
@@ -210,48 +206,46 @@ def audio_record():
         if file.filename == '':
             return jsonify({"error": f"File {idx+1} is missing a name"}), 400
         
-    global si_model
-    if si_model is None:
-        si_segment_data = process_audio_segments(files)
-        speaker_profile = df_segment_data(*si_segment_data)
-        speaker_data = speaker_profile
+    si_segment_data = process_audio_segments(files)
+    speaker_profile = df_segment_data(*si_segment_data)
+    speaker_data = speaker_profile
 
-        speaker_profile['label'] = 1
-        others_profile['label'] = 0
-        others_profile.columns = speaker_profile.columns
+    speaker_profile['label'] = 1
+    others_profile['label'] = 0
+    others_profile.columns = speaker_profile.columns
 
-        data_df = pd.concat([speaker_profile, others_profile], ignore_index=True)
-        data_df = data_df.sample(frac=1).reset_index(drop=True)
-        X = data_df.drop(columns=['File Name','label']).values
-        y = data_df['label'].values
-        
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=42)
-        scaler = StandardScaler()
-        X_train = scaler.fit_transform(X_train)
-        X_test = scaler.transform(X_test)
-        X_train = X_train.reshape((X_train.shape[0], X_train.shape[1], 1, 1))
-        X_test = X_test.reshape((X_test.shape[0], X_test.shape[1], 1, 1))
-        input_shape = (X_train.shape[1], 1, 1)
-        print(f'input shape {input_shape}')
+    data_df = pd.concat([speaker_profile, others_profile], ignore_index=True)
+    data_df = data_df.sample(frac=1).reset_index(drop=True)
+    X = data_df.drop(columns=['File Name','label']).values
+    y = data_df['label'].values
+    
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=42)
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+    X_train = X_train.reshape((X_train.shape[0], X_train.shape[1], 1, 1))
+    X_test = X_test.reshape((X_test.shape[0], X_test.shape[1], 1, 1))
+    input_shape = (X_train.shape[1], 1, 1)
+    print(f'input shape {input_shape}')
 
-        speaker_identification_model = Sequential([
-            Conv2D(16, (3, 3), activation='relu', input_shape=input_shape, padding='same'),
-            MaxPooling2D((2,1)),
+    speaker_identification_model = Sequential([
+        Conv2D(16, (3, 3), activation='relu', input_shape=input_shape, padding='same'),
+        MaxPooling2D((2,1)),
 
-            Conv2D(32, (3, 3), activation='relu', padding='same'),
-            MaxPooling2D((2,1)),
+        Conv2D(32, (3, 3), activation='relu', padding='same'),
+        MaxPooling2D((2,1)),
 
-            Flatten(),
-            Dense(64, activation='relu'),
-            Dropout(0.5),
+        Flatten(),
+        Dense(64, activation='relu'),
+        Dropout(0.5),
 
-            Dense(1, activation='sigmoid')
-        ])
+        Dense(1, activation='sigmoid')
+    ])
 
-        speaker_identification_model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-        speaker_identification_model.fit(X_train, y_train, epochs=20, batch_size=16, validation_split=0.2)
-        speaker_identification_model.evaluate(X_test, y_test)
-        si_model = speaker_identification_model
+    speaker_identification_model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    speaker_identification_model.fit(X_train, y_train, epochs=10, batch_size=16, validation_split=0.01)
+    speaker_identification_model.evaluate(X_test, y_test)
+    si_model = speaker_identification_model
     
     
     if segment_data is None:
@@ -263,19 +257,19 @@ def audio_record():
     speaker_data_json_df = speaker_data.to_dict(orient="records")
 
     mfcc = isolate_df(segment_data_df, speaker_profile, 'MFCC')
-    mfcc_plot = plot(*mfcc, 'Segments', 'mean MFCC value', 'Mean MFCC')
+    mfcc_plot = plot(*mfcc, 'mean MFCC value', 'Mean MFCC')
     
     rms = isolate_df(segment_data_df, speaker_profile, 'RMS')
-    rms_plot = plot(*rms, 'Segments', 'mean RMS value', 'Mean RMS')
+    rms_plot = plot(*rms, 'mean RMS value', 'Mean RMS')
     
     zcr = isolate_df(segment_data_df, speaker_profile, 'ZCR')
-    zcr_plot = plot(*zcr, 'Segments', 'mean ZCR value', 'Mean ZCR')
+    zcr_plot = plot(*zcr, 'mean ZCR value', 'Mean ZCR')
 
     sc = isolate_df(segment_data_df, speaker_profile, 'SpectralCentroid')
-    sc_plot = plot(*sc, 'Segments', 'mean Spectral Centroid value', 'Mean Spectral Centroid')
+    sc_plot = plot(*sc, 'mean Spectral Centroid value', 'Mean Spectral Centroid')
     
     sb = isolate_df(segment_data_df, speaker_profile, 'SpectralBandwidth')
-    sb_plot = plot(*sb, 'Segments','mean Spectral Bandwidth value', 'Mean Spectral Bandwidth')
+    sb_plot = plot(*sb,'mean Spectral Bandwidth value', 'Mean Spectral Bandwidth')
 
     response_data = {
         "overall": overall,
