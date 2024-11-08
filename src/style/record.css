@@ -1,0 +1,156 @@
+* {
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE10+/Edge */
+    user-select: none;
+    /* Standard */
+
+}
+
+.body-record {
+    height: 100vh;
+    width: 100%;
+    height: fit-content;
+    /* border: 1px solid; */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.title {
+    margin-top: 80px;
+    font-size: 24px;
+}
+
+.reminder {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    /* border: 1px solid; */
+    width: 100%;
+    height: 50px;
+}
+
+.info {
+    /* border: 1px solid; */
+    /* padding: 0;
+    margin: 0 */
+    height: 20px;
+    color: var(--grey);
+}
+
+.reminder h6 {
+    /* border: 1px solid; */
+    margin: 0px 0 0 5px;
+    font-size: 18px;
+    color: var(--grey);
+}
+
+.sentence {
+    margin-top: 60px;
+    width: 60%;
+    height: 120px;
+    font-size: 28px;
+    /* border: 1px solid; */
+}
+
+.progress {
+    margin-top: 30px;
+    /* border: 1px solid; */
+    height: fit-content;
+    width: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: transparent;
+}
+
+.progress h4 {
+    font-size: 18px;
+}
+
+.next-prev {
+    height: 25px;
+    cursor: pointer;
+}
+
+/* .mic {
+    height: 60px;
+    width: 60px;
+    background-color: var(--green);
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+} */
+
+.icon-mic {
+    height: 22px;
+    color: var(--black);
+    transition: all ease-in-out;
+}
+
+.icon-mic:hover {
+    background-color: var(--greenHover);
+}
+
+.note {
+    margin-top: 20px;
+    width: 50%;
+    /* border: 1px solid; */
+    font-size: 14px;
+    line-height: 30px;
+
+}
+
+.btn-detect {
+    height: 40px;
+    width: 80px;
+    cursor: pointer;
+    margin: 20px;
+    background-color: var(--green);
+    color: #ffffff;
+    border-radius: 3px;
+    border: none;
+    transition: 0.2s ease-in-out all;
+}
+
+.btn-detect:hover {
+    background-color: var(--greenHover);
+}
+
+@media screen and (max-width: 600px) {
+    #record{
+        font-size: 36px;
+        position: fixed;
+        top: -70px;
+        left: 0;
+        width: 100%;
+        background-color: #f0f0f0;
+        padding: 10px;
+        z-index: 999; /* Ensures it stays on top of other elements */
+    }
+    
+    .note{
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        z-index: 1000;
+        background-color: white;
+        padding: 10px 0;
+        text-align: center;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .centered{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}

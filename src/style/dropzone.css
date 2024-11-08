@@ -1,0 +1,90 @@
+.dropzone {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 360px;
+    height: 40%;
+    width: 80%;
+    border: 2px dashed #CFDCE9;
+    background-color: #F4F9F5;
+}
+
+.icon-cloud {
+    color: var(--grey);
+    font-size: 80px;
+}
+
+.dropzone p button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 18px;
+    color: var(--grey);
+}
+
+.dropzone p {
+    margin-top: 10px;
+    font-size: 18px;
+    color: var(--grey);
+}
+
+.uploads ul li {
+    list-style-type: none;
+}
+
+.btn {
+    height: 40px;
+    width: 80px;
+    cursor: pointer;
+    margin: 20px;
+}
+
+.btn-upload {
+    background-color: var(--green);
+    color: #ffffff;
+    border-radius: 3px;
+    border: none;
+}
+
+
+.btn-upload:hover {
+    background-color: var(--greenHover);
+}
+
+.btn-cancel {
+    border: 2px var(--green) solid;
+    color: var(--green);
+    border-radius: 3px;
+}
+
+@media screen and (max-width: 600px) {
+    .dropzone {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 80%;
+        width: 30%;
+        border-style: none;
+        border-width: none;
+        background-color: #ffffff;
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+
+    .icon-cloud {
+        color: var(--grey);
+        font-size: 150px;
+    }
+
+    p{
+        visibility: hidden;
+    }
+
+    button{
+        visibility: visible;
+        text-align: center;
+    }
+}
