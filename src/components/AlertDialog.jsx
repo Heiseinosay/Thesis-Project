@@ -9,7 +9,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useNavigate } from 'react-router-dom';
 import { DataContext } from './DataContext';
 
-export default function AlertDialog() {
+export default function AlertDialog({forResult}) {
   const [open, setOpen] = React.useState(false);
   const {recordData} = useContext(DataContext);
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ export default function AlertDialog() {
 
   const handleResult = () => {
     setOpen(false);
-    navigate('/result');
+    forResult();
   }
 
   return (
