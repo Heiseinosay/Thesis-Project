@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import '../style/root.css'
 import '../style/font.css'
 import '../style/upload.css'
+import {Helmet} from 'react-helmet';
 
 import Navigation from '../components/NavigationProgress'
 import DropZone from '../components/DragDropFiles'
@@ -14,6 +15,9 @@ import axios from "axios";
 function Upload() {
     return (
         <div className='upload-body'>
+            <Helmet>
+                <title>Upload</title>
+            </Helmet>
             <div className="column column-first">
                 <div className="restrictions">
                     <h1 className='inter-bold'>Restrictions</h1>

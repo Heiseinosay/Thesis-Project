@@ -6,6 +6,7 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropou
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
+import matplotlib
 
 import librosa
 import numpy as np
@@ -15,6 +16,8 @@ import joblib
 import math
 import io
 import base64
+import threading
+matplotlib.use('Agg')
 
 app = Flask(__name__)
 cors = CORS(app, origins='*')
@@ -31,7 +34,7 @@ df_model = load_model('models/DeepFake_model_ver5_full.keras')
 df_scaler = joblib.load('scalers/df_scaler.pkl')
 si_scaler = joblib.load('scalers/vr_scaler.pkl')
 
-others_profile = pd.read_csv('results\\voice_recognition\\training_full\\vr_other_segment.csv')
+others_profile = pd.read_csv('results/voice_recognition/training_full/vr_other_segment.csv')
 
 # preprocessing the audio input
 def pre_process(audio_file):
@@ -137,7 +140,7 @@ def average(confidence_scores):
     return rounded
 
 def plot(uploaded_sequence, speaker_sequence, ylabel, title):
-
+    
     plt.figure(figsize=(12, 6))
     plt.plot(uploaded_sequence, linestyle='-', color='red', label='Uploaded')
     plt.plot(speaker_sequence, linestyle='-', color='green', label='Speaker')

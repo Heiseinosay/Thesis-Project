@@ -23,7 +23,7 @@ const RecordingButton = ({onAudioSubmit, onStart, onEnd}) => {
     const handleImageClick = () =>{
         if (!isRecording){
             startRecording();
-            onStart()
+            onStart();
         } else{
             stopRecording();
         }

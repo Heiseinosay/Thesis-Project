@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import anime from 'animejs/lib/anime.es.js';
 import '../style/loading.css';
 import '../style/root.css';
+import {Helmet} from 'react-helmet';
+
 
 function Loading() {
 
@@ -21,6 +23,9 @@ function Loading() {
 
     return (
         <div className='body-loading'>
+            <Helmet>
+                <title>Loading</title>
+            </Helmet>
             <h1>Detecting...</h1>
             <div id="loading-bar">
                 {Array.from({ length: 7 }).map((_, index) => (

@@ -4,6 +4,7 @@ import '../style/record.css'
 import React, { Component, useState, useEffect, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import {Helmet} from 'react-helmet';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons'
@@ -99,6 +100,9 @@ function Record() {
 
     return (
         <div className='body-record'>
+            <Helmet>
+                <title>Record</title>
+            </Helmet>
             {loading ? (
                 <Loading />
             ) : (

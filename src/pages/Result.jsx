@@ -6,7 +6,7 @@ import { DataContext } from '../components/DataContext'
 import Circular from '../components/Circular'
 import {Buffer} from 'buffer'
 import ImageViewer from 'react-simple-image-viewer'
-
+import {Helmet} from 'react-helmet';
 
 function Result() {
     const [imageCurrent, setImage] = useState('')
@@ -67,6 +67,9 @@ function Result() {
     
     return (
         <div className='body-result'>
+            <Helmet>
+                <title>Result</title>
+            </Helmet>
             {isViewerOpen ? (
                     <ImageViewer
                     src={[imageCurrent]}
