@@ -25,16 +25,26 @@ function NavigationProgress(props) {
             }
         }
 
+        if (link === "/result-upload") {
+            if (activeLink === 2) {
+                alert(true)
+                return;
+
+            }
+            if (activeLink > 1) {
+                navigate(link);
+            } else {
+                alert("Please accomplish the requirements")
+            }
+        }
+
         if (link === "/record") {
             if (activeLink === 2) {
                 return;
             }
             if (activeLink > 1) {
-                if (confirm('All progress will be lost. Are you sure you want to go back?')) {
-                    navigate(link);
-                } else {
-                    return;
-                }
+                navigate(link);
+
             } else {
                 alert("Please accomplish the requirements")
             }
@@ -69,18 +79,24 @@ function NavigationProgress(props) {
                     <div className="circle-active"></div>
                 </div>
             </Link>
-            <Link className='href' onClick={(event) => redirect(event, "/record")}>
+            <div className='href'>
                 <div className="links">
-                    <h4 className={props.active >= 2 ? "inter-bold active-link " : "inter-regular"}>Record</h4>
+                    <h4 className={props.active >= 2 ? "inter-bold active-link " : "inter-regular"}>Result</h4>
                     <div className={props.active >= 2 ? "circle-active" : "circle"}></div>
                 </div>
-            </Link>
-            <Link className='href' onClick={(event) => redirect(event, "/detect")}>
+            </div>
+            <Link className='href' onClick={(event) => redirect(event, "/record")}>
                 <div className="links">
-                    <h4 className={props.active >= 3 ? "inter-bold active-link " : "inter-regular"}>Detect</h4>
+                    <h4 className={props.active >= 3 ? "inter-bold active-link " : "inter-regular"}>Record</h4>
                     <div className={props.active >= 3 ? "circle-active" : "circle"}></div>
                 </div>
             </Link>
+            <div className='href'>
+                <div className="links">
+                    <h4 className={props.active >= 4 ? "inter-bold active-link " : "inter-regular"}>Result</h4>
+                    <div className={props.active >= 4 ? "circle-active" : "circle"}></div>
+                </div>
+            </div>
         </div >
     )
 }

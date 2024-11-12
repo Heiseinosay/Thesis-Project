@@ -8,15 +8,17 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useNavigate } from 'react-router-dom';
 import { DataContext } from './DataContext';
+import '../style/alertstyle.css'
 
-export default function AlertDialog() {
+export default function AlertDialog({ forResult }) {
+
   const [open, setOpen] = React.useState(false);
-  const {recordData} = useContext(DataContext);
+  const { recordData } = useContext(DataContext);
   const navigate = useNavigate();
 
   const handleClickOpen = () => {
-    if (recordData != null){
-        setOpen(true)
+    if (recordData != null) {
+      setOpen(true)
     } else {
       navigate('/record')
     }
@@ -33,14 +35,14 @@ export default function AlertDialog() {
 
   const handleResult = () => {
     setOpen(false);
-    navigate('/result');
+    forResult();
   }
 
   return (
     <React.Fragment>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Speaker identify the audio
-      </Button>
+      <button className='btn-speaker-identification' variant="outlined" onClick={handleClickOpen}>
+        Determine how close the audio is to your voice?
+      </button>
       <Dialog
         open={open}
         onClose={handleClose}

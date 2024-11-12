@@ -279,7 +279,7 @@ def audio_record():
     zcr_plot = plot_sequence(zcr_upload, zcr_speaker, 'mean ZCR value', 'Mean ZCR')
 
     sc_upload = isolate_df(segment_data_df, 'SpectralCentroid')
-    sc_speaker = isolate_df(speaker_data_df, 'SpectralCentrod')
+    sc_speaker = isolate_df(speaker_data_df, 'SpectralCentroid')
     sc_plot = plot_sequence(sc_upload, sc_speaker, 'mean Spectral Centroid value', 'Mean Spectral Centroid')
     
     sb_upload = isolate_df(segment_data_df,'SpectralBandwidth')

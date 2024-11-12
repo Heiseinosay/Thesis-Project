@@ -52,11 +52,11 @@ function Record() {
 
     const handleDetect = async () => {
         const formData = new FormData();
-        recordings.forEach((recording, index)=> {
+        recordings.forEach((recording, index) => {
             formData.append('audio_files', recording, `Recording_${index}.mp3`)
         });
 
-        try{
+        try {
             setLoading(true);
             const response = await axios.post('http://127.0.0.1:8080/api/record', formData, {
                 headers: {
@@ -66,7 +66,7 @@ function Record() {
             console.log('Audio submitted successfully:', response.data);
             setRecordData(response.data);
             navigate("/result")
-        } catch(error) {
+        } catch (error) {
             console.error('Error submitting audio:', error);
         } finally {
             setLoading(false);
@@ -79,7 +79,7 @@ function Record() {
             const updatedRecordings = [...prevRecordings];
             updatedRecordings[sentenceCount] = audioBlob;
             return updatedRecordings;
-            
+
         });
 
         incrementCount(1)
@@ -103,41 +103,41 @@ function Record() {
                 <Loading />
             ) : (
                 <>
-                <Navigation active={2} />
-                <h1 className='title'>Record your voice</h1>
-                <div className='reminder'>
-                    <FontAwesomeIcon className='info' icon={faCircleInfo} />
-                    <h6 className='inter-regular'>For best result speak clearly in microphone</h6>
-                </div>
+                    <Navigation active={3} />
+                    <h1 className='title'>Record your voice</h1>
+                    <div className='reminder'>
+                        <FontAwesomeIcon className='info' icon={faCircleInfo} />
+                        <h6 className='inter-regular'>For best result speak clearly in microphone</h6>
+                    </div>
 
-                <h1 className='inter-regular sentence'>{sentenceArray[sentenceCount]}</h1>
+                    <h1 className='inter-regular sentence'>{sentenceArray[sentenceCount]}</h1>
 
-                <div className='progress'>
-                    <FontAwesomeIcon 
-                        className='next-prev' 
-                        icon={faAngleLeft} 
-                        onClick={() => !isRecording && incrementCount(0)} 
-                        style={{ pointerEvents: isRecording ? 'none' : 'auto', opacity: isRecording ? 0.5 : 1 }}
-                    />
-                    <h4 className='inter-bold'>{sentenceCount + 1}</h4>
-                    <FontAwesomeIcon 
-                        className='next-prev' 
-                        icon={faAngleRight} 
-                        onClick={() => !isRecording && incrementCount(1)} 
-                        style={{ pointerEvents: isRecording ? 'none' : 'auto', opacity: isRecording ? 0.5 : 1 }}
-                    />
-                </div>
+                    <div className='progress'>
+                        <FontAwesomeIcon
+                            className='next-prev'
+                            icon={faAngleLeft}
+                            onClick={() => !isRecording && incrementCount(0)}
+                            style={{ pointerEvents: isRecording ? 'none' : 'auto', opacity: isRecording ? 0.5 : 1 }}
+                        />
+                        <h4 className='inter-bold'>{sentenceCount + 1}</h4>
+                        <FontAwesomeIcon
+                            className='next-prev'
+                            icon={faAngleRight}
+                            onClick={() => !isRecording && incrementCount(1)}
+                            style={{ pointerEvents: isRecording ? 'none' : 'auto', opacity: isRecording ? 0.5 : 1 }}
+                        />
+                    </div>
 
-                <div className="mic">
-                    <RecordButton onStart={handleRecordingStart} onEnd={handleRecordingEnd} onAudioSubmit={handleAudioSubmit}/>
-                    {/* <FontAwesomeIcon icon={faMicrophone} /> */}
-                </div>
+                    <div className="mic">
+                        <RecordButton onStart={handleRecordingStart} onEnd={handleRecordingEnd} onAudioSubmit={handleAudioSubmit} />
+                        {/* <FontAwesomeIcon icon={faMicrophone} /> */}
+                    </div>
 
-                <p className='inter-light note'><b className='inter-bold'>Note:</b> We need to analyze a short audio sample focusing on aspects like how you sound, the energy in your voice, and your speaking pace. Your privacy is important to us. Your voice recordings will be anonymized and used solely for voice recognition technology.</p>
-                {recordings.every(recording => recording != null) ? (
-                    <button className='btn-detect' onClick={handleDetect}>Detect</button>
-                ): null}
-                {/* <button className="test" onClick={handleTest}>TEST</button> */}
+                    <p className='inter-light note'><b className='inter-bold'>Note:</b> We need to analyze a short audio sample focusing on aspects like how you sound, the energy in your voice, and your speaking pace. Your privacy is important to us. Your voice recordings will be anonymized and used solely for voice recognition technology.</p>
+                    {recordings.every(recording => recording != null) ? (
+                        <button className='btn-detect' onClick={handleDetect}>Detect</button>
+                    ) : null}
+                    {/* <button className="test" onClick={handleTest}>TEST</button> */}
                 </>
             )}
         </div>
