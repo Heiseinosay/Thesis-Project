@@ -65,19 +65,19 @@ function NavigationProgress(props) {
         <div className='navigation'>
             <Link className='href' onClick={(event) => redirect(event, "/upload")}>
                 <div className="links">
-                    <h4 className='inter-bold active-link'>Upload</h4>
+                    <h4 className={props.active >= 1 ? "inter-bold active-link" : "inter-regular"}>Upload</h4>
                     <div className="circle-active"></div>
                 </div>
             </Link>
             <Link className='href' onClick={(event) => redirect(event, "/record")}>
                 <div className="links">
-                    <h4 className={props.active >= 2 ? "inter-regular active-link " : "inter-regular"}>Record</h4>
+                    <h4 className={props.active >= 2 ? "inter-bold active-link " : "inter-regular"}>Record</h4>
                     <div className={props.active >= 2 ? "circle-active" : "circle"}></div>
                 </div>
             </Link>
             <Link className='href' onClick={(event) => redirect(event, "/detect")}>
                 <div className="links">
-                    <h4 className={props.active >= 3 ? "inter-regular active-link " : "inter-regular"}>Detect</h4>
+                    <h4 className={props.active >= 3 ? "inter-bold active-link " : "inter-regular"}>Detect</h4>
                     <div className={props.active >= 3 ? "circle-active" : "circle"}></div>
                 </div>
             </Link>

@@ -1,14 +1,14 @@
-import React, { useState,useContext, useEffect, useCallback } from 'react'
+import React, { useState, useContext, useEffect, useCallback } from 'react'
 import Navigation from '../components/NavigationProgress'
 import '../style/result.css'
 import TableScale from '../components/TableScale'
 import { DataContext } from '../components/DataContext'
 import Circular from '../components/Circular'
-import {Buffer} from 'buffer'
+import { Buffer } from 'buffer'
 import ImageViewer from 'react-simple-image-viewer'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faCircle} from '@fortawesome/free-regular-svg-icons'
+import { faCircle } from '@fortawesome/free-regular-svg-icons'
 import { useNavigate } from 'react-router-dom'
 
 import Button from '@mui/material/Button';
@@ -2772,10 +2772,10 @@ function ResultUpload() {
         setIsViewerOpen(false);
     };
 
-    const scanAnother = () =>{
+    const scanAnother = () => {
         navigate('/upload')
     };
-    
+
     const res = (jsonData) => {
         const oa = jsonData.overall;
         if (oa >= 50) {
@@ -2794,24 +2794,24 @@ function ResultUpload() {
             };
         }
     };
-    
-    const {result, colorResult, resultValue, overall} = res(uploadData)
-    
+
+    const { result, colorResult, resultValue, overall } = res(uploadData)
+
     return (
         <div className='body-result'>
             {isViewerOpen ? (
-                    <ImageViewer
+                <ImageViewer
                     src={[imageCurrent]}
-                    disableScroll={ false }
-                    closeOnClickOutside={ true }
-                    onClose={ closeImageViewer }
-                    />
-                ) : (
-                    <>
+                    disableScroll={false}
+                    closeOnClickOutside={true}
+                    onClose={closeImageViewer}
+                />
+            ) : (
+                <>
                     <div className='result-title'>
                         {/* <h4>The Audio is</h4> */}
                         <div className="title-1 titles inter-regular">
-                            <Circular colorValue={colorResult} resultValue={resultValue} progressValue={overall}/>
+                            <Circular colorValue={colorResult} resultValue={resultValue} progressValue={overall} />
                             <div className="block">
                                 <h1>{result}</h1>
                                 <p>{overall}% Probability AI generated</p>
@@ -2824,42 +2824,42 @@ function ResultUpload() {
                             <div className='details-img-holder'>
                                 <div>
                                     <h4>MFCC</h4>
-                                    <img 
-                                        src={"data:image/jpeg;base64," + uploadData.mfcc_plot} 
-                                        alt="MFCC Plot" 
-                                        onClick={()=> openImageViewer("data:image/jpeg;base64," + uploadData.mfcc_plot)} 
+                                    <img
+                                        src={"data:image/jpeg;base64," + uploadData.mfcc_plot}
+                                        alt="MFCC Plot"
+                                        onClick={() => openImageViewer("data:image/jpeg;base64," + uploadData.mfcc_plot)}
                                     />
                                 </div>
                                 <div>
                                     <h4>Root-Mean-Square</h4>
-                                    <img 
-                                        src={"data:image/jpeg;base64," + uploadData.rms_plot} 
+                                    <img
+                                        src={"data:image/jpeg;base64," + uploadData.rms_plot}
                                         alt="RMS Plot"
-                                        onClick={()=> openImageViewer("data:image/jpeg;base64," + uploadData.rms_plot)}
+                                        onClick={() => openImageViewer("data:image/jpeg;base64," + uploadData.rms_plot)}
                                     />
                                 </div>
                                 <div>
                                     <h4>Zero Crossing Rate</h4>
-                                    <img 
-                                        src={"data:image/jpeg;base64," + uploadData.zcr_plot} 
-                                        alt="ZCR Plot" 
-                                        onClick={()=> openImageViewer("data:image/jpeg;base64," + uploadData.zcr_plot)}
+                                    <img
+                                        src={"data:image/jpeg;base64," + uploadData.zcr_plot}
+                                        alt="ZCR Plot"
+                                        onClick={() => openImageViewer("data:image/jpeg;base64," + uploadData.zcr_plot)}
                                     />
                                 </div>
                                 <div>
                                     <h4>Spectral Centroid</h4>
-                                    <img 
-                                        src={"data:image/jpeg;base64," + uploadData.sc_plot} 
-                                        alt="Spectral Centroid Plot" 
-                                        onClick={()=> openImageViewer("data:image/jpeg;base64," + uploadData.sc_plot)}
+                                    <img
+                                        src={"data:image/jpeg;base64," + uploadData.sc_plot}
+                                        alt="Spectral Centroid Plot"
+                                        onClick={() => openImageViewer("data:image/jpeg;base64," + uploadData.sc_plot)}
                                     />
                                 </div>
                                 <div>
                                     <h4>Spectral Bandwidth</h4>
-                                    <img 
-                                        src={"data:image/jpeg;base64," + uploadData.sb_plot} 
+                                    <img
+                                        src={"data:image/jpeg;base64," + uploadData.sb_plot}
                                         alt="Spectral Bandwidth Plot"
-                                        onClick={()=> openImageViewer("data:image/jpeg;base64," + uploadData.sb_plot)}
+                                        onClick={() => openImageViewer("data:image/jpeg;base64," + uploadData.sb_plot)}
                                     />
                                 </div>
                             </div>
@@ -2871,21 +2871,21 @@ function ResultUpload() {
                             </div>
                         </details>
                     </div>
-                        
+
                     <div className="table-holder">
-                        <div className='table-container' style={{marginTop:'40px'}}>
+                        <div className='table-container' style={{ marginTop: '40px' }}>
                             <h3>Uploaded File</h3>
-                            <TableScale data={{uploadData}} />
+                            <TableScale data={{ uploadData }} />
                         </div>
                     </div>
-                    
+
                     <div className=''>
                         <Button className='result-btn' variant='outlined' color='success' onClick={scanAnother}> Detect another audio</Button>
                         <div>
                             <AlertDialog></AlertDialog>
                             <FontAwesomeIcon icon={faCircle} />
                         </div>
-                        
+
                     </div>
                     {/* <p className='result-tag inter-light'>Result:</p>
 
@@ -2920,8 +2920,9 @@ function ResultUpload() {
                     <h1 className='chart-title inter-bold'>Speaker Identification Comparison</h1>
                     <a href='#' className='inter-light'>See detailed comparison</a> */}
 
-                    <Navigation active="3" className='nav' />
-            </>
+                    <Navigation active="3" />
+                    {/* className='nav' */}
+                </>
             )}
         </div>
     )
