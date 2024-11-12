@@ -169,7 +169,7 @@ function Result() {
                         </div>
                     </div>
 
-                    <Button className='result-btn' variant='outlined' color='success' onClick={scanAnother}> Detect another audio</Button>
+                    <button className='result-btn' variant='outlined' color='success' onClick={scanAnother}> Detect another audio</button>
 
 
                     {/* <p className='result-tag inter-light'>Result:</p>
