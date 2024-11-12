@@ -10,12 +10,9 @@ import { DataContext } from './DataContext';
 
 import axios from "axios";
 
-function DragDropFiles() {
-    const {setUploadData} = useContext(DataContext)
-
+function DragDropFiles({onUpload}) {
     const [files, setFiles] = useState(null);
     const inputRef = useRef();
-    const navigate = useNavigate();
 
     const handleDragOver = (event) => {
         event.preventDefault();
@@ -88,28 +85,11 @@ function DragDropFiles() {
         setFiles([selectedFile]);
     };
 
-    const handleUpload = async() => {
+    const handleUpload = () => {
         // navigate("/record")
         // navigate("/result")
         if (!files || files.length === 0) return;
-
-        const formData = new FormData();
-        formData.append("audio_file", files[0]);
-
-        try{
-            navigate("/record")
-            const response = await axios.post('http://127.0.0.1:8080/api/upload', formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-            
-            console.log('Upload response:', response.data);
-            setUploadData(response.data);
-            
-        } catch (err){
-            console.error('Upload error:', err)
-        }
+        onUpload(files);
     };
 
     if (files)

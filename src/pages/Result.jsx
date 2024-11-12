@@ -6,11 +6,14 @@ import { DataContext } from '../components/DataContext'
 import Circular from '../components/Circular'
 import {Buffer} from 'buffer'
 import ImageViewer from 'react-simple-image-viewer'
+import { useNavigate } from 'react-router-dom'
+import Button from '@mui/material/Button';
 
 
 function Result() {
     const [imageCurrent, setImage] = useState('')
     const { uploadData, recordData } = useContext(DataContext);
+    const navigate = useNavigate();
     
     const [isViewerOpen, setIsViewerOpen] = useState(false);
     const openImageViewer = useCallback((image) => {
@@ -65,6 +68,9 @@ function Result() {
     const {result, colorResult, resultValue, overall} = res(uploadData)
     const {resultRec, colorResultRec, resultValueRec, overallRec} = rec(recordData)
     
+    const scanAnother =()=>{
+        navigate('/upload')
+    }
     return (
         <div className='body-result'>
             {isViewerOpen ? (
@@ -162,6 +168,8 @@ function Result() {
                             <TableScale data={{uploadData}} />
                         </div>
                     </div>
+
+                    <Button className='result-btn' variant='outlined' color='success' onClick={scanAnother}> Detect another audio</Button>
                     
                     
                     {/* <p className='result-tag inter-light'>Result:</p>

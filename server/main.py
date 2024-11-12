@@ -21,11 +21,12 @@ cors = CORS(app, origins='*')
 
 # uploaded audio
 uploaded_audio = None
-segment_data = None
 segment_data_df = None
+speaker_data_df = None
 
 # load the model
 df_model = load_model('models/DeepFake_model_ver5_full.keras')
+si_model = None
 
 # load scaler
 df_scaler = joblib.load('scalers/df_scaler.pkl')
@@ -113,12 +114,14 @@ def df_segment_data(file_names, mfcc_features, rms_values, zcr_values, sc_values
     combined_df = pd.concat([pd.DataFrame(file_names, columns=['File Name']), mfcc_df, rms_df, zcr_df, sc_df, sb_df], axis=1)
     return combined_df
 
+# reshape segment
 def reshape_segment(segment_features, scaler):
     reshaped = scaler.transform([segment_features])
     reshaped = reshaped.reshape(1, reshaped.shape[1], 1, 1)
 
     return reshaped
 
+# evaluate each segments
 def evaluate_segments(segment_data, model, scaler):
     confidence_scores = []
     for i in range(0, segment_data.shape[0]):
@@ -131,38 +134,34 @@ def evaluate_segments(segment_data, model, scaler):
     
     return confidence_scores
 
+# average and rounding up
 def average(confidence_scores):
     avg = sum(confidence_scores)/len(confidence_scores)
     rounded = math.ceil(avg * 100)
     return rounded
 
-def plot(uploaded_sequence, speaker_sequence, ylabel, title):
-
+# plot upload and speaker
+def plot_sequence(uploaded, speaker=None, ylabel='', title=''):
     plt.figure(figsize=(12, 6))
-    plt.plot(uploaded_sequence, linestyle='-', color='red', label='Uploaded')
-    plt.plot(speaker_sequence, linestyle='-', color='green', label='Speaker')
-
+    plt.plot(uploaded, linestyle='-', color='red', label='Uploaded')
+    if speaker is not None:
+        plt.plot(speaker, linestyle='-', color='green', label='Speaker')
     plt.xlabel('Feature Column')
     plt.ylabel(ylabel)
     plt.title(title)
     plt.legend()
-
-    # convert to base64
     bytesIO = io.BytesIO()
     plt.savefig(bytesIO, format='jpg')
     bytesIO.seek(0)
-    base64_data = base64.b64encode(bytesIO.read()).decode()
-    return(base64_data)
+    return base64.b64encode(bytesIO.read()).decode()
 
-def isolate_df(upload_df, speaker_df, header):
+# getting the mean of each column for 
+def isolate_df(upload_df, header):
     u_data_df = upload_df[[col for col in upload_df.columns if col.startswith(header)]]
-    s_data_df = speaker_df[[col for col in speaker_df.columns if col.startswith(header)]]
     u_data_df.columns = range(1, len(u_data_df.columns) + 1)
-    s_data_df.columns = range(1, len(s_data_df.columns) + 1)
     u_mean =  u_data_df.mean(axis=0)
-    s_mean = s_data_df.mean(axis=0)
 
-    return u_mean, s_mean
+    return u_mean
 
 @app.route("/api/upload", methods=['POST'])
 def audio_uploaded():
@@ -173,103 +172,119 @@ def audio_uploaded():
     if file.filename == '':
         return jsonify({"message": "No selected file"}), 400
     
-    if file:
-        global segment_data
-        global segment_data_df
-        uploaded_audio = file
-        processed_upload = process_audio_segments([uploaded_audio])
-        segment_data_df = df_segment_data(*processed_upload)
+    global segment_data_df
+    uploaded_audio = file
+    processed_upload = process_audio_segments([uploaded_audio])
+    segment_data_df = df_segment_data(*processed_upload)
 
-        segment_data = segment_data_df.drop(columns=['File Name']).values
+    segment_data = segment_data_df.drop(columns=['File Name']).values
 
-        evaluate = evaluate_segments(segment_data, df_model, df_scaler)
-        overall = average(evaluate)
+    evaluate = evaluate_segments(segment_data, df_model, df_scaler)
+    overall = average(evaluate)
 
-        segment_data_json_df = segment_data_df.to_dict(orient="records")
-        response_data = {
-            "overall": overall,
-            "uploaded_data": segment_data_json_df
-        }
+    plots = {
+        "mfcc_plot": plot_sequence(isolate_df(segment_data_df, 'MFCC'), ylabel='mean MFCC value', title='Mean MFCC'),
+        "rms_plot": plot_sequence(isolate_df(segment_data_df, 'RMS'), ylabel='mean RMS value', title='Mean RMS'),
+        "zcr_plot": plot_sequence(isolate_df(segment_data_df, 'ZCR'), ylabel='mean ZCR value', title='Mean ZCR'),
+        "sc_plot": plot_sequence(isolate_df(segment_data_df, 'SpectralCentroid'), ylabel='mean Spectral Centroid value', title='Mean Spectral Centroid'),
+        "sb_plot": plot_sequence(isolate_df(segment_data_df, 'SpectralBandwidth'), ylabel='mean Spectral Bandwidth value', title='Mean Spectral Bandwidth')
+    }
+    segment_data_json_df = segment_data_df.to_dict(orient="records")
+    response_data = {
+        "overall": overall,
+        **plots,
+        "uploaded_data": segment_data_json_df
+    }
 
-        response_json = json.dumps(response_data)
-        return Response(response_json, mimetype='application/json')
-
+    response_json = json.dumps(response_data)
+    return Response(response_json, mimetype='application/json')
 
 @app.route("/api/record", methods=['POST'])
 def audio_record():
+    global si_model
+    global speaker_data_df
 
-    files = request.files.getlist('audio_files')
-    if len(files) != 10:
-        return jsonify({"error": f"Exactly 10 files are required. {len(files)}"}), 400
+    # train a model if si_model is empty (meaning: no audio recorded)
+    
+    if si_model == None:
+        # check if the request is empty
+        if 'audio_files' not in request.files:
+            return jsonify({"message": "No file part"}), 400
 
-    for idx, file in enumerate(files):
-        if file.filename == '':
-            return jsonify({"error": f"File {idx+1} is missing a name"}), 400
+        files = request.files.getlist('audio_files')
+        if (len(files) != 10) and si_model == None:
+            return jsonify({"error": f"Exactly 10 files are required. {len(files)}"}), 400
+
+        if segment_data_df is None:
+            return jsonify({'message': "Data is empty"}), 400
+
+        si_segment_data = process_audio_segments(files)
+        speaker_profile = df_segment_data(*si_segment_data)
+        speaker_data_df = speaker_profile
+
+        speaker_profile['label'] = 1
+        others_profile['label'] = 0
+        others_profile.columns = speaker_profile.columns
+
+        data_df = pd.concat([speaker_profile, others_profile], ignore_index=True)
+        data_df = data_df.sample(frac=1).reset_index(drop=True)
+        X = data_df.drop(columns=['File Name','label']).values
+        y = data_df['label'].values
         
-    si_segment_data = process_audio_segments(files)
-    speaker_profile = df_segment_data(*si_segment_data)
-    speaker_data = speaker_profile
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=42)
+        scaler = StandardScaler()
+        X_train = scaler.fit_transform(X_train)
+        X_test = scaler.transform(X_test)
+        X_train = X_train.reshape((X_train.shape[0], X_train.shape[1], 1, 1))
+        X_test = X_test.reshape((X_test.shape[0], X_test.shape[1], 1, 1))
+        input_shape = (X_train.shape[1], 1, 1)
+        print(f'input shape {input_shape}')
 
-    speaker_profile['label'] = 1
-    others_profile['label'] = 0
-    others_profile.columns = speaker_profile.columns
+        speaker_identification_model = Sequential([
+            Conv2D(16, (3, 3), activation='relu', input_shape=input_shape, padding='same'),
+            MaxPooling2D((2,1)),
 
-    data_df = pd.concat([speaker_profile, others_profile], ignore_index=True)
-    data_df = data_df.sample(frac=1).reset_index(drop=True)
-    X = data_df.drop(columns=['File Name','label']).values
-    y = data_df['label'].values
+            Conv2D(32, (3, 3), activation='relu', padding='same'),
+            MaxPooling2D((2,1)),
+
+            Flatten(),
+            Dense(64, activation='relu'),
+            Dropout(0.5),
+
+            Dense(1, activation='sigmoid')
+        ])
+
+        speaker_identification_model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+        speaker_identification_model.fit(X_train, y_train, epochs=10, batch_size=16, validation_split=0.01)
+        speaker_identification_model.evaluate(X_test, y_test)
+        si_model = speaker_identification_model
     
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=42)
-    scaler = StandardScaler()
-    X_train = scaler.fit_transform(X_train)
-    X_test = scaler.transform(X_test)
-    X_train = X_train.reshape((X_train.shape[0], X_train.shape[1], 1, 1))
-    X_test = X_test.reshape((X_test.shape[0], X_test.shape[1], 1, 1))
-    input_shape = (X_train.shape[1], 1, 1)
-    print(f'input shape {input_shape}')
-
-    speaker_identification_model = Sequential([
-        Conv2D(16, (3, 3), activation='relu', input_shape=input_shape, padding='same'),
-        MaxPooling2D((2,1)),
-
-        Conv2D(32, (3, 3), activation='relu', padding='same'),
-        MaxPooling2D((2,1)),
-
-        Flatten(),
-        Dense(64, activation='relu'),
-        Dropout(0.5),
-
-        Dense(1, activation='sigmoid')
-    ])
-
-    speaker_identification_model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-    speaker_identification_model.fit(X_train, y_train, epochs=10, batch_size=16, validation_split=0.01)
-    speaker_identification_model.evaluate(X_test, y_test)
-    si_model = speaker_identification_model
-    
-    
-    if segment_data is None:
-        return jsonify({'message': "Data is empty"}), 400
-    
+    segment_data = segment_data_df.drop(columns=['File Name']).values
     evaluate = evaluate_segments(segment_data, si_model, si_scaler)
     overall = average(evaluate)
     
-    speaker_data_json_df = speaker_data.to_dict(orient="records")
+    speaker_data_json_df = speaker_data_df.to_dict(orient="records")
 
-    mfcc = isolate_df(segment_data_df, speaker_profile, 'MFCC')
-    mfcc_plot = plot(*mfcc, 'mean MFCC value', 'Mean MFCC')
-    
-    rms = isolate_df(segment_data_df, speaker_profile, 'RMS')
-    rms_plot = plot(*rms, 'mean RMS value', 'Mean RMS')
-    
-    zcr = isolate_df(segment_data_df, speaker_profile, 'ZCR')
-    zcr_plot = plot(*zcr, 'mean ZCR value', 'Mean ZCR')
+    # create data frame on each global dataframe then plot
+    mfcc_upload = isolate_df(segment_data_df, 'MFCC')
+    mfcc_speaker = isolate_df(speaker_data_df, 'MFCC')
+    mfcc_plot = plot_sequence(mfcc_upload, mfcc_speaker, 'mean MFCC value', 'Mean MFCC')
 
-    sc = isolate_df(segment_data_df, speaker_profile, 'SpectralCentroid')
-    sc_plot = plot(*sc, 'mean Spectral Centroid value', 'Mean Spectral Centroid')
+    rms_upload = isolate_df(segment_data_df, 'RMS')
+    rms_speaker = isolate_df(speaker_data_df, 'RMS')
+    rms_plot = plot_sequence(rms_upload, rms_speaker, 'mean RMS value', 'Mean RMS')
     
-    sb = isolate_df(segment_data_df, speaker_profile, 'SpectralBandwidth')
-    sb_plot = plot(*sb,'mean Spectral Bandwidth value', 'Mean Spectral Bandwidth')
+    zcr_upload = isolate_df(segment_data_df, 'ZCR')
+    zcr_speaker = isolate_df(speaker_data_df, 'ZCR')
+    zcr_plot = plot_sequence(zcr_upload, zcr_speaker, 'mean ZCR value', 'Mean ZCR')
+
+    sc_upload = isolate_df(segment_data_df, 'SpectralCentroid')
+    sc_speaker = isolate_df(speaker_data_df, 'SpectralCentrod')
+    sc_plot = plot_sequence(sc_upload, sc_speaker, 'mean Spectral Centroid value', 'Mean Spectral Centroid')
+    
+    sb_upload = isolate_df(segment_data_df,'SpectralBandwidth')
+    sb_speaker = isolate_df(speaker_data_df, 'SpectralBandwidth')
+    sb_plot = plot_sequence(sb_upload, sb_speaker,'mean Spectral Bandwidth value', 'Mean Spectral Bandwidth')
 
     response_data = {
         "overall": overall,
