@@ -6,6 +6,7 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropou
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
+import matplotlib
 
 import librosa
 import numpy as np
@@ -18,6 +19,8 @@ import base64
 
 app = Flask(__name__)
 cors = CORS(app, origins='*')
+matplotlib.use('Agg')
+
 
 # uploaded audio
 uploaded_audio = None
@@ -203,15 +206,14 @@ def audio_uploaded():
 def audio_record():
     global si_model
     global speaker_data_df
-
+    files = request.files.getlist('audio_files')
     # train a model if si_model is empty (meaning: no audio recorded)
-    
-    if si_model == None:
+    print(files)
+    if ((si_model == None) or (len(files) == 10)):
         # check if the request is empty
         if 'audio_files' not in request.files:
             return jsonify({"message": "No file part"}), 400
 
-        files = request.files.getlist('audio_files')
         if (len(files) != 10) and si_model == None:
             return jsonify({"error": f"Exactly 10 files are required. {len(files)}"}), 400
 
