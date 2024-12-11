@@ -3,7 +3,7 @@ import './App.css';
 import './style/root.css'
 import './style/font.css'
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Upload from './pages/Upload'
 import Record from './pages/Record'
 import Result from './pages/Result'
@@ -17,8 +17,9 @@ function App() {
       <DataProvider>
         <BrowserRouter>
           <Routes>
+            <Route path="/" element={<Navigate to="/upload" replace />} />
             <Route path='/upload' element={<Upload />}></Route>
-            <Route path ='/result-upload' element={<ResultUpload/>}></Route>
+            <Route path='/result-upload' element={<ResultUpload />}></Route>
             <Route path='/record' element={<Record />}></Route>
             <Route path='/result' element={<Result />}></Route>
             <Route path='/loading' element={<Loading />}></Route>

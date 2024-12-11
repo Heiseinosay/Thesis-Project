@@ -2840,7 +2840,7 @@ function ResultUpload() {
                                     <Circular colorValue={colorResult} resultValue={resultValue} progressValue={overall} />
                                     <div className="block">
                                         <h1>{result}</h1>
-                                        <p>{overall}% Probability AI generated</p>
+                                        <p>{overall}% </p>
                                     </div>
                                 </div>
                             </div>

@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import '../style/root.css'
 import '../style/font.css'
 import '../style/upload.css'
@@ -14,17 +14,19 @@ import axios from "axios";
 import { DataContext } from '../components/DataContext'
 import { useNavigate } from 'react-router-dom'
 
+import { Helmet } from 'react-helmet'
+
 function Upload() {
-    const {setUploadData} = useContext(DataContext);
+    const { setUploadData } = useContext(DataContext);
     const [files, setFiles] = useState(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    
+
 
     const handleFiles = (file) => {
         setFiles(file);
     }
-    
+
     // call handleSubmit upload once files is updated
     useEffect(() => {
         if (files) {
@@ -32,7 +34,7 @@ function Upload() {
         }
     }, [files]);
 
-    const handleSubmitUpload = async() =>{       
+    const handleSubmitUpload = async () => {
         if (!files || files.length === 0) {
             alert('No files selected. Please upload a file before submitting.');
             return;
@@ -40,7 +42,7 @@ function Upload() {
 
         const formData = new FormData();
         formData.append("audio_file", files[0]);
-        try{
+        try {
             setLoading(true)
             const response = await axios.post('http://127.0.0.1:8080/api/upload', formData, {
                 headers: {
@@ -50,7 +52,7 @@ function Upload() {
             console.log('Upload response:', response.data);
             setUploadData(response.data);
             navigate('/result-upload');
-        } catch (err){
+        } catch (err) {
             console.error('Upload error:', err)
             alert(err)
         } finally {
@@ -59,24 +61,27 @@ function Upload() {
     };
     return (
         <div className='upload-body'>
+            <Helmet>
+                <title>Deepfake Detection</title>
+            </Helmet>
             {loading ? (
                 <Loading />
             ) : (
-            <>
-            <div className="column column-first">
-                <div className="restrictions">
-                    <h1 className='inter-bold'>Restrictions</h1>
-                    <p className='inter-light'><FontAwesomeIcon className='icon' icon={faCircleInfo} />File size 50 mb</p>
-                    <p className='inter-light'><FontAwesomeIcon className='icon' icon={faCircleInfo} />File format .wav, .mp3,. flac, etc.</p>
-                </div>
-            </div>
-            <div className="column column-midle">
-                <h1 className='inter-bold'>Verify Audio</h1>
-                <DropZone onUpload={handleFiles}/>
-            </div>
-            <div className="column"></div>
-            <Navigation active={1} />
-            </>
+                <>
+                    <div className="column column-first">
+                        <div className="restrictions">
+                            <h1 className='inter-bold'>Restrictions</h1>
+                            <p className='inter-light'><FontAwesomeIcon className='icon' icon={faCircleInfo} />File size 50 mb</p>
+                            <p className='inter-light'><FontAwesomeIcon className='icon' icon={faCircleInfo} />File format .wav, .mp3,. flac, etc.</p>
+                        </div>
+                    </div>
+                    <div className="column column-midle">
+                        <h1 className='inter-bold'>Verify Audio</h1>
+                        <DropZone onUpload={handleFiles} />
+                    </div>
+                    <div className="column"></div>
+                    <Navigation active={1} />
+                </>
             )}
         </div>
     )

@@ -21,11 +21,17 @@ app = Flask(__name__)
 cors = CORS(app, origins='*')
 matplotlib.use('Agg')
 
+# Test
+@app.route("/greet/tie")
+def greetings():
+    return ({"Hello": "World" })
+
 
 # uploaded audio
 uploaded_audio = None
 segment_data_df = None
 speaker_data_df = None
+
 
 # load the model
 df_model = load_model('models/DeepFake_model_ver5_full.keras')
