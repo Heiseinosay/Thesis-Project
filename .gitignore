@@ -1,15 +1,15 @@
-server/venv/
-server/main - Copy.py
-server/main - Copy (2).py
-server/main - Copy (3).py
-server/test.ipynb
-server/test.png
-server/test_2.ipynb
-server/synthetic/
+.vscode/
+
 .venv/
 .env
 
+/server/main.py
+/server/main - Copy.py
+/server/spanish86_cloned.mp3
+/server/synthetic
+*.ipynb
+
 node_modules/
-.vscode/
-src/pages/Record - Copy.jsx
-src/components/RecordingButton - Copy.jsx
+
+*- Copy*
+
