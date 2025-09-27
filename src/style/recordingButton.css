@@ -1,0 +1,41 @@
+.mic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    margin-top: 20px;
+}
+
+.record {
+    width: 20px;
+    height: 20px;
+    padding: 20px;
+    background-color: var(--green);
+    border-radius: 50%;
+}
+
+.playback {
+    margin-right: 20px;
+}
+
+.check {
+    width: 20px;
+    height: 20px;
+    padding: 15px;
+    background-color: var(--green);
+    border-radius: 50%;
+    margin-right: 20px;
+}
+
+.again {
+    width: 20px;
+    height: 20px;
+    padding: 15px;
+    background-color: var(--lightGrey);
+    border-radius: 50%;
+    color: var(--black);
+}
+
+.record, .check, .again {
+    cursor: pointer;
+}

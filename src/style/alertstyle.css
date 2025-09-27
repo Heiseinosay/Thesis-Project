@@ -1,0 +1,9 @@
+.btn-speaker-identification {
+    border: none;
+    outline: none;
+    color: var(--green);
+    background-color: transparent;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: underline;
+}
