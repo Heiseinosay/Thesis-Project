@@ -4,9 +4,9 @@
 .env
 
 /server/main.py
-/server/main - Copy.py
 /server/spanish86_cloned.mp3
 /server/synthetic
+/server/test.png
 *.ipynb
 
 node_modules/
