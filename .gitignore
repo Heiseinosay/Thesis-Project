@@ -6,7 +6,8 @@ server/test.ipynb
 server/test.png
 server/test_2.ipynb
 server/synthetic/
-
+.venv/
+.env
 
 node_modules/
 .vscode/
