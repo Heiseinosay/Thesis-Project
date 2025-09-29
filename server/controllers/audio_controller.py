@@ -19,7 +19,7 @@ class AudioController:
         self.visualization_service = VisualizationService()
         self.validator = AudioFileValidator()
         
-        # Store processed data (in production, use proper session/cache management)
+        # Store processed data
         self._uploaded_data = None
         self._speaker_data = None
         
