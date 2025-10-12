@@ -14,8 +14,8 @@ class ValidationResult:
 class AudioFileValidator:
     """Validates audio file uploads and requests."""
 
-    ALLOWED_EXTENSIONS = set(AppConfig.audio_processing.audio_extensions)
-    MAX_FILE_SIZE = AppConfig.audio_processing.max_file_size
+    ALLOWED_EXTENSIONS = [".wav", ".mp3", ".flac"]
+    MAX_FILE_SIZE = 50 * 1024 * 1024 
 
     def validate_upload_request(self, request: Request) -> ValidationResult:
         """Validate audio upload request."""

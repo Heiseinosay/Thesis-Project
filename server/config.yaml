@@ -1,9 +1,9 @@
 settings:
   debug_mode: False
-  host: 127.0.0.1
+  host: "127.0.0.1"
   port: 8080
 
-audio_config:
+audio_processing:
   target_sample_rate: 22050
   segment_duration: 2
   frame_length: 1024
@@ -12,7 +12,13 @@ audio_config:
   required_speaker_files: 10
   res_type: "kaiser_fast"
   audio_extensions:
-    - .wav
-    - .mp3
-    - .flac
+    - ".wav"
+    - ".mp3"
+    - ".flac"
   max_file_size: 52428800
+
+path:
+  base_dir: "./"
+  models: "./models"
+  scalers: "./scalers"
+  results: "./results"

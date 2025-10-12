@@ -9,13 +9,13 @@ from typing import List, Any
 import math
 
 from config.settings import AppConfig
-from server.exceptions.audio_exceptions import AudioProcessingError, ModelLoadingError, InsufficientDataError
+from exceptions.audio_exceptions import AudioProcessingError, ModelLoadingError, InsufficientDataError
 
 class ModelService:
     """Manages machine learning models and their operations."""
 
     def __init__(self, config: AppConfig):
-        self.config = AppConfig
+        self.config = config
         self._deepfake_model = None
         self._speaker_model = None
         self._df_scaler = None

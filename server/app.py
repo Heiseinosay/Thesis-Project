@@ -6,7 +6,7 @@ from utils.logger import setup_logger
 from services.model_service import ModelService
 from controllers.audio_controller import AudioController
 
-def create_app(config_class: AppConfig = config):
+def create_app(config_class: AppConfig):
     """Application factory pattern"""
 
     app = Flask(__name__)
@@ -14,7 +14,7 @@ def create_app(config_class: AppConfig = config):
     app.config.update(config_class.settings.flask_config)
 
     # Initialize CORS
-    CORS(app, origins=config_class['CORS_ORIGINS'])
+    CORS(app, origins=config_class.CORS_ORIGINS)
 
     # Setup logging
     setup_logger(app)
@@ -31,7 +31,7 @@ def create_app(config_class: AppConfig = config):
     return app
 
 if __name__ == "__main__":
-    app = create_app()
+    app = create_app(config)
     app.run(
         debug=app.config['DEBUG'],
         port=app.config['PORT'],

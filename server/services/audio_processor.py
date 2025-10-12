@@ -6,7 +6,7 @@ from werkzeug.datastructures import FileStorage
 
 from models.audio_data import AudioFeatures
 from config.settings import AppConfig
-from server.exceptions.audio_exceptions import AudioProcessingError, ModelLoadingError, InsufficientDataError
+from exceptions.audio_exceptions import AudioProcessingError, ModelLoadingError, InsufficientDataError
 
 class AudioProcessor:
     """Handles all audio preprocessing and feature extraction operations."""

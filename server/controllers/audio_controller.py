@@ -7,8 +7,8 @@ from services.model_service import ModelService
 from services.audio_processor import AudioProcessor
 from services.visualization import VisualizationService
 from models.audio_data import AnalysisResult, ProcessedAudioData
-from server.exceptions.audio_exceptions import AudioProcessingError, ModelLoadingError, InsufficientDataError
-from server.utils.validators import AudioFileValidator
+from exceptions.audio_exceptions import AudioProcessingError, ModelLoadingError, InsufficientDataError
+from utils.validators import AudioFileValidator
 
 class AudioController:
     """Handles HTTP requests for audio analysis operations."""

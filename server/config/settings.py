@@ -7,7 +7,7 @@ from typing import List, Dict
 class SettingsConfig(BaseModel):
     debug_mode: bool = False
     host: str = "0.0.0.0"
-    port: str = 8080
+    port: int = 8080
 
     @property
     def flask_config(self) -> Dict:
@@ -30,16 +30,16 @@ class AudioConfig(BaseModel):
 
 class PathConfig(BaseModel):
     # Path
-    base_dir = Path(__file__).resolve().parent.parent
-    models_dir = base_dir / 'models'
-    scalers_dir = base_dir / 'scalers'
-    results_dir = base_dir / 'results'
+    base_dir: Path = Path(__file__).resolve().parent.parent
+    models_dir: Path = base_dir / 'models'
+    scalers_dir: Path = base_dir / 'scalers'
+    results_dir: Path = base_dir / 'results'
 
     # Model files
-    deepfake_model = models_dir / 'DeepFake_model_ver5_full.keras'
-    deepfake_scaler = scalers_dir / 'df_scaler.pkl'
-    speaker_scaler = scalers_dir / 'si_scaler.pkl'
-    vr_data = results_dir / 'voice_recognition' / 'training_full' / 'vr_other_segment.csv'
+    deepfake_model: Path = models_dir / 'DeepFake_model_ver5_full.keras'
+    deepfake_scaler: Path = scalers_dir / 'df_scaler.pkl'
+    speaker_scaler: Path = scalers_dir / 'vr_scaler.pkl'
+    vr_data: Path = results_dir / 'voice_recognition' / 'training_full' / 'vr_other_segment.csv'
 
 class AppConfig(BaseModel):
     """Base configuration class"""
@@ -49,7 +49,7 @@ class AppConfig(BaseModel):
     path: PathConfig
 
     # CORS Settings
-    CORS_ORIGINS = os.getenv('CORS_ORIGIN', '*')
+    CORS_ORIGINS: str = os.getenv('CORS_ORIGIN', '*')
 
     # DEBUG = bool(os.getenv('DEBUG'))
     # HOST = os.getenv('HOST')
@@ -69,11 +69,14 @@ class AppConfig(BaseModel):
             return data
         
         except FileNotFoundError:
-            raise f""
-        except ValidationError:
-            print("input logger")
+            print(f"Configuration file not found at: {yaml_path}")
+            raise
+        except ValidationError as e:
+            print(f"Configuration validation error: {e}")
+            raise
         except yaml.YAMLError as e:
-            print("input logger")
+            print(f"Error parsing YAML configuration file: {e}")
+            raise
 
 # class DevelopmentConfig(AppConfig):
 #     DEBUG = True
@@ -82,5 +85,5 @@ class AppConfig(BaseModel):
 #     DEBUG = False
 
 ENV = os.getenv("ENV", "development")
-config_file = Path(__file__).resolve().parent.parent
+config_file = Path(__file__).resolve().parent.parent / "config.yaml"
 config = AppConfig.load_config(config_file)
