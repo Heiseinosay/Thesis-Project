@@ -12,4 +12,5 @@
 node_modules/
 
 *- Copy*
+*__pycache__/
 
