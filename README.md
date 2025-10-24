@@ -1,8 +1,6 @@
 🟢⚪
 # The Development of Detection Model of Human and AI Generated Voice 
 
-Current branch: ```for production```
-
 #### Abstract
 
 &nbsp;&nbsp;&nbsp;&nbsp; AI-generated voices, also known as text-to-speech (TTS), produce speech in diverse styles and accents using artificial intelligence. While this technology has been widely adopted across industries, it poses significant security risks, including voice cloning scams that have resulted in financial losses. This study addresses these concerns by developing a deepfake identification model to detect AI-generated voices and a speaker identification model to determine the speaker. The models analyzed features such as phonation, frequency, rate, and volume using six datasets, comprising 10,173 synthetic voice files and 10,142 human voice files. For speaker identification, a test participant recorded 10 English sentences containing all 44 English phonemes. The convolutional neural network (CNN) models, implemented in Python, achieved an accuracy of 96% across all performance metrics. This research highlights the potential of these models to improve voice authentication systems and mitigate the risks associated with AI voice cloning. However, further testing on speaker identification data is recommended to enhance performance. The study underscores the importance of integrating advanced detection technologies to safeguard privacy and security.
